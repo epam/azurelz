@@ -1,16 +1,7 @@
-[[_TOC_]]
-
 # Overview
 **Demo** is a demo solution that allows us to deploy an infrastructure to get acquainted with the capabilities that Azure Landing Zone provides. It represents a hub-and-spoke type of network architecture in Azure. The hub virtual network acts as a central point of connectivity for many space virtual networks. The hub can also be used as a connectivity point for on-premise networks. The spoke virtual networks communicate with the hub and are useful for isolating workloads. Using different subscriptions, the **Demo** solution allows you to flexibly and granularly manage resources and share architecture costs between different parts of the business.
 
-# Terraform development documentation
-
-- [Terraform code development](./docs/Terraform-code-development.md)
-- [Terraform initial resources management](./docs/Terraform-initial-resources-management.md)
-- [Terraform resources deployment order](./docs/Terraform-resources-deployment-order.md)
-
 # Architecture
-
 
 **Demo** solution based on the configuration for existing Terraform root modules. It is a complete standalone solution and allows you to create a network infrastructure, workload (Storage Account, VMs, etc.) and management resources.
 
@@ -176,7 +167,7 @@ epam.shared.env.demo.tfvars
 $env:ARM_SUBSCRIPTION_ID="00000000-1111-2222-3333-444444444444
 $env:ARM_TENANT_ID="00000000-1111-2222-3333-444444444444"
 $env:ARM_CLIENT_ID="00000000-1111-2222-3333-444444444444"
-$env:ARM_CLIENT_SECRET='Irh3F4vnPGJfJuPj5DUNx6vJbh3UhRFk5AHjL5O6'
+$env:ARM_CLIENT_SECRET=' <secret for ARM_CLIENT_ID> '
 ```
 5. Deploy Base Layer to all environments
 ```pwsh

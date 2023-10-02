@@ -1,5 +1,3 @@
-[[_TOC_]]
-
 # Introduction
 
 Within any Azure Cloud infrastructure, there are a lot of dependencies between resources.

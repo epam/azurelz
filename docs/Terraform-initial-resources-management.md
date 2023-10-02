@@ -1,6 +1,3 @@
-[[_TOC_]]
-
-
 # Introduction
 
 
