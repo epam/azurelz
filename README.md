@@ -66,9 +66,9 @@ For Infrastructure Key Vault and Application Key Vault diagnostic settings are e
 ![**Demo_solution_KV**](./.images/Demo_solution_KV.png)
 
 
-##File structure
+## File structure
 
-```
+```console
 │   LICENSE
 │   README.md
 │
@@ -146,7 +146,7 @@ The solution is designed for deployment in five subscriptions. You can create
 `git clone https://github.com/epam/azurelz.git`
 2. Move on it
 `cd azurelz`
-3. replace tokens `#{ENV_AZURE_SUBSCRIPTION_ID}#` and `#{ENV_AZURE_SP_OBJECT_ID}#` in each config files:
+3. Replace tokens `#{ENV_AZURE_SUBSCRIPTION_ID}#` and `#{ENV_AZURE_SP_OBJECT_ID}#` in each config files:
 ```pwsh
 (Get-Content .\AzureLandingZone\_configuration\_solutions\demo_solution_v2\epam.business.env.demo.tfvars).replace(
 '#{ENV_AZURE_SUBSCRIPTION_ID}#', '<SUBSCRIPTION1>') |
@@ -220,7 +220,7 @@ $env:ARM_SUBSCRIPTION_ID="00000000-1111-2222-3333-444444444448"
 terraform workspace select epam.shared.env.demo
 terraform apply -var-file="../../../_configuration/_solutions/demo_solution_v2/epam.shared.env.demo.tfvars"
 ```
-7. For destroy you need to start with Work layer, then destroy Base layer
+7. For destroy you need to use `terraform destroy` instead `terraform apply` and start destroy with Work layer, then destroy Base layer
 
 
 # Terraform Application Documentation
