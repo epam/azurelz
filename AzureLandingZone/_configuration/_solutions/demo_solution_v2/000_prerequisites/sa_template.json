@@ -1,0 +1,73 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"saName": {
+			"type": "string"
+		},
+		"location": {
+			"type": "string"
+		},
+		"containerName": {
+			"type": "string"
+		}
+	},
+	"resources": [{
+		"type": "Microsoft.Storage/storageAccounts",
+		"apiVersion": "2021-06-01",
+		"name": "[toLower(parameters('saName'))]",
+		"location": "[parameters('location')]",
+		"sku": {
+			"name": "Standard_GRS",
+			"tier": "Standard"
+		},
+		"kind": "StorageV2",
+		"properties": {
+			"accessTier": "Hot",
+			"allowBlobPublicAccess": false,
+			"allowSharedKeyAccess": true,
+			"isHnsEnabled": false,
+			"isNfsV3Enabled": false,
+			"largeFileSharesState": "Disabled",
+			"publicNetworkAccess": "Enabled",
+			"supportsHttpsTrafficOnly": true,
+			"minimumTlsVersion": "TLS1_2"
+		},
+		"resources": [{
+				"type": "blobServices/containers",
+				"apiVersion": "2021-06-01",
+				"name": "[concat('default/', parameters('containerName'))]",
+				"dependsOn": [
+					"[parameters('saName')]"
+				],
+				"properties": {
+					"immutableStorageWithVersioning": {
+						"enabled": false
+					},
+					"publicAccess": "None"
+				}
+			},
+			{
+				"type": "blobServices",
+				"apiVersion": "2021-06-01",
+				"name": "default",
+				"dependsOn": [
+					"[parameters('saName')]"
+				],
+				"properties": {
+					"automaticSnapshotPolicyEnabled": "bool",
+					"changeFeed": {
+						"enabled": true,
+						"retentionInDays": "180"
+					},
+					"deleteRetentionPolicy": {
+						"days": 30,
+						"enabled": true
+					},
+					"isVersioningEnabled": true
+				}
+			}
+		]
+	}],
+	"outputs": {}
+}
