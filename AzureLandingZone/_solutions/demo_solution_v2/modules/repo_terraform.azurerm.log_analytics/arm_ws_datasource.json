@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "omsWorkspaceName": {
+            "type": "String"
+        },
+        "subscription_id": {
+            "type": "String"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
+            "apiVersion": "2020-08-01",
+            "name": "[concat(parameters('omsWorkspaceName'), '/', parameters('subscription_id'))]",
+            "kind": "AzureActivityLog",
+            "properties": {
+                "linkedResourceId": "[concat('/subscriptions/', parameters('subscription_id'), '/providers/microsoft.insights/eventTypes/management')]"
+            }
+        }
+    ]
+}
