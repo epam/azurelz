@@ -135,7 +135,7 @@ For Infrastructure Key Vault and Application Key Vault diagnostic settings are e
 
 Since **Demo** solution based on Azure Cloud environment and Azure DevOps service specifically - we need:
 - Azure Cloud subscription;
-- Azure Cloud Service Principal with with "Management Group Contributor" and "Owner" (at least "Contributor" and "User Access Administrator" if "Owner" is not available) permissions at the Root Management Group level;
+- Azure Cloud Service Principal with "Management Group Contributor" and "Owner" (at least "Contributor" and "User Access Administrator" if "Owner" is not available) permissions at the Root Management Group level;
 
 The solution is designed for deployment in five subscriptions. You can create 
 - a separate Azure Resource Manager service connection for each of them at Azure subscription level scope;
