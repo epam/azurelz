@@ -9,29 +9,6 @@ variable "backend_tfstate_file_path_list" {
   type        = list(string)
 }
 
-# Next variables refer to global.tfvars file
-variable "backend_container_name" {
-  type = string
-}
-variable "backend_resource_group_name" {
-  type = string
-}
-variable "backend_storage_account_name" {
-  type = string
-}
-variable "backend_subscription_id" {
-  type = string
-}
-variable "backend_client_secret" {
-  type = string
-}
-variable "backend_client_id" {
-  type = string
-}
-variable "backend_tenant_id" {
-  type = string
-}
-
 # 020_automationaccount
 variable "automation_accounts" {
   type        = any
