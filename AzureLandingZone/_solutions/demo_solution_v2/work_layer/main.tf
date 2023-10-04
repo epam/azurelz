@@ -1,16 +1,9 @@
 # Get data from tfstate files in defined environment (optional)
 data "terraform_remote_state" "tfstate" {
   count   = var.backend_tfstate_file_path != null ? 1 : 0
-  backend = "azurerm"
+  backend = "local"
   config = {
-    container_name       = var.backend_container_name
-    key                  = "${var.backend_tfstate_file_path}/terraform.tfstate"
-    resource_group_name  = var.backend_resource_group_name
-    storage_account_name = var.backend_storage_account_name
-    subscription_id      = var.backend_subscription_id
-    client_secret        = var.backend_client_secret
-    client_id            = var.backend_client_id
-    tenant_id            = var.backend_tenant_id
+    path = "${var.backend_tfstate_file_path}/terraform.tfstate"
   }
 }
 
@@ -18,16 +11,9 @@ data "terraform_remote_state" "tfstate" {
 #data "terraform_remote_state" "vnet" {
 data "terraform_remote_state" "base" {
   for_each = toset(var.backend_tfstate_file_path_list)
-  backend  = "azurerm"
+  backend  = "local"
   config = {
-    container_name       = var.backend_container_name
-    key                  = "${each.key}/terraform.tfstate"
-    resource_group_name  = var.backend_resource_group_name
-    storage_account_name = var.backend_storage_account_name
-    subscription_id      = var.backend_subscription_id
-    client_secret        = var.backend_client_secret
-    client_id            = var.backend_client_id
-    tenant_id            = var.backend_tenant_id
+    path = "${each.key}/terraform.tfstate"
   }
 }
 
