@@ -1,9 +1,13 @@
 
 
 # Overview
+This solution is a part of `EPAM Azure Landing Zone`, which is the output of a multi subscription Azure environment that accounts for scale, security, governance, networking, and identity. Azure landing zones enable application migrations and the greenfield development at enterprise scale in Azure. These zones consider all platform resources that are required to support the customer's application portfolio and don't differentiate between infrastructure as a service or platform as a service.
+
 **Demo** is a demo solution that allows us to deploy an infrastructure to get acquainted with the capabilities that Azure Landing Zone provides. It represents a hub-and-spoke type of network architecture in Azure. The hub virtual network acts as a central point of connectivity for many space virtual networks. The hub can also be used as a connectivity point for on-premise networks. The spoke virtual networks communicate with the hub and are useful for isolating workloads. Using different subscriptions, the **Demo** solution allows you to flexibly and granularly manage resources and share architecture costs between different parts of the business.
 
+
 # Architecture
+
 
 **Demo** solution based on the configuration for existing Terraform root modules. It is a complete standalone solution and allows you to create a network infrastructure, workload (Storage Account, VMs, etc.) and management resources.
 
@@ -72,9 +76,9 @@ For Infrastructure Key Vault and Application Key Vault diagnostic settings are e
 
 
 Since **Demo** solution based on Azure Cloud environment and Azure DevOps service specifically - we need:
-- Azure Cloud subscription(s);
+- Azure Cloud subscription;
 - Azure Cloud Service Principal with "Management Group Contributor" and "Owner" (at least "Contributor" and "User Access Administrator" if "Owner" is not available) permissions at the Root Management Group level;
-- Tools: git, terraform, powershell
+- Instaled on local machine tools: git, terraform, powershell
 
 The solution is designed for deployment in five subscriptions. You can create 
 - a separate Azure Resource Manager service connection for each of them at Azure subscription level scope;
@@ -223,10 +227,9 @@ terraform apply -var-file="../configuration/epam.shared.env.demo.tfvars" -auto-a
 6. For destroy you need to start with Work layer, then destroy Base layer. Use terraform select <workspace> for switching to target environment.
 
 
-# Terraform Application Documentation
-- [Terraform-code-development](./docs/Terraform-code-development.md)
-- [Terraform-initial-resources-management](./docs/Terraform-initial-resources-management.md)
-- [Terraform-resources-deployment-order](./docs/Terraform-resources-deployment-order.md)
+# Terraform Best practices
+ [Terraform-code-development](./docs/Best-practices-for-using-Terraform.md)
+
 
 # Contributing
 
