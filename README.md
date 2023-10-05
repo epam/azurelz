@@ -232,7 +232,7 @@ terraform apply -var-file="../configuration/epam.shared.env.demo.tfvars" -auto-a
 
 Please check out our [contributing guidelines](CONTRIBUTING.md).
 
-#License
+# License
 
 Copyright (C) 2023 EPAM Systems Inc.
 The LICENSE file in the root of this project applies unless otherwise indicated. 
