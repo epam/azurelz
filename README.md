@@ -1,7 +1,11 @@
-# Overview
+
+
+#Overview
 **Demo** is a demo solution that allows us to deploy an infrastructure to get acquainted with the capabilities that Azure Landing Zone provides. It represents a hub-and-spoke type of network architecture in Azure. The hub virtual network acts as a central point of connectivity for many space virtual networks. The hub can also be used as a connectivity point for on-premise networks. The spoke virtual networks communicate with the hub and are useful for isolating workloads. Using different subscriptions, the **Demo** solution allows you to flexibly and granularly manage resources and share architecture costs between different parts of the business.
 
+
 # Architecture
+
 
 **Demo** solution based on the configuration for existing Terraform root modules. It is a complete standalone solution and allows you to create a network infrastructure, workload (Storage Account, VMs, etc.) and management resources.
 
@@ -39,7 +43,7 @@ The **Demo** solution integrates the deployment of management groups to efficien
 
 The diagram below provides an overview: 
 
-![**Demo**](./.images/Demo_solution_MG.png)
+![**Demo**](./docs/.attachments/Demo_solution_MG.png)
 
 The **Demo** solution is divided into 5 environments. Subscriptions are used as an environment tool, which allows you to split the solution for accessing isolated loads. Each environment performs certain functions:
 - The **Gateway** is the entry-point of the whole solution that provides access to the solution from the Internet or on-premise networks and provides communication between the other environments.
@@ -50,7 +54,7 @@ The **Demo** solution is divided into 5 environments. Subscriptions are used as 
 
 The diagram below provides a high-level overview of the solution:
 
-![**Demo**](./.images/Demo_solution_v1.1.png)
+![**Demo**](./docs/.attachments/Demo_solution_v1.1.png)
 
 
 ## Azure Key Vault management
@@ -63,71 +67,81 @@ The solution deploys key stores for three types of purposes:
 
 For Infrastructure Key Vault and Application Key Vault diagnostic settings are enabled, collected logs and metrics are stored in Log Analytics workspaces for each environment (subscription) and duplicated in the storage account for each environment (subscription)
 
-![**Demo_solution_KV**](./.images/Demo_solution_KV.png)
+![**Demo_solution_KV**](./docs/.attachments/Demo_solution_KV.png)
 
 
-## File structure
+##File structure
 
 ```console
+│   CONTRIBUTING.md
 │   LICENSE
 │   README.md
 │
-└───AzureLandingZone
-    ├───_configuration
-    │   └───_solutions
-    │       └───demo_solution_v2
-    │           │   epam.business.env.demo.tfvars
-    │           │   epam.dmz.env.demo.tfvars
-    │           │   epam.gateway.env.demo.tfvars
-    │           │   epam.identity.env.demo.tfvars
-    │           │   epam.shared.env.demo.tfvars
-    │           │   runbook-fw.ps1
-    │           │
-    │           └───000_prerequisites
-    │                   rg_parameters.json
-    │                   rg_template.json
-    │                   sa_parameters.json
-    │                   sa_template.json
+├───demo_solution
+│   ├───base_layer
+│   │       main.tf
+│   │       output.tf
+│   │       variables.tf
+│   │       version.tf
+│   │
+│   ├───work_layer
+│   │       main.tf
+│   │       output.tf
+│   │       runbook-fw.ps1
+│   │       variables.tf
+│   │       version.tf
+|   |
+│   ├───configuration
+│   │       epam.business.env.demo.tfvars
+│   │       epam.dmz.env.demo.tfvars
+│   │       epam.gateway.env.demo.tfvars
+│   │       epam.identity.env.demo.tfvars
+│   │       epam.shared.env.demo.tfvars
+│   │
+│   └───modules
+│      ├───repo_terraform.azurerm.app_gtw...
+│      ├───repo_terraform.azurerm.automation_account...
+│      ├───repo_terraform.azurerm.azure_firewall...
+│      ├───repo_terraform.azurerm.bastion_host...
+│      ├───repo_terraform.azurerm.key_vault...
+│      ├───repo_terraform.azurerm.key_vault_content...
+│      ├───repo_terraform.azurerm.lock...
+│      ├───repo_terraform.azurerm.log_analytics...
+│      ├───repo_terraform.azurerm.mg...
+│      ├───repo_terraform.azurerm.nsg...
+│      ├───repo_terraform.azurerm.policy_initiative...
+│      ├───repo_terraform.azurerm.private_dns...
+│      ├───repo_terraform.azurerm.private_endpoint...
+│      ├───repo_terraform.azurerm.public_ip...
+│      ├───repo_terraform.azurerm.rbac...
+│      ├───repo_terraform.azurerm.recovery_backup...
+│      ├───repo_terraform.azurerm.rg...
+│      ├───repo_terraform.azurerm.storage_account...
+│      ├───repo_terraform.azurerm.udr...
+│      ├───repo_terraform.azurerm.user_assigned_identity...
+│      ├───repo_terraform.azurerm.virtual_gtw...
+│      ├───repo_terraform.azurerm.vm...
+│      ├───repo_terraform.azurerm.vnet...
+│      └───repo_terraform.azurerm.vnet_peering...
+│   
+├───docs
+│    │   Terraform-code-development.md
+│    │   Terraform-initial-resources-management.md
+│    │   Terraform-resources-deployment-order.md
+│    │
+│    └───.attachments...
+│
+└───.github
+    │   CODEOWNERS
     │
-    └───_solutions
-        └───demo_solution_v2
-            ├───base_layer
-            │       main.tf
-            │       output.tf
-            │       variables.tf
-            │       version.tf
-            │
-            ├───work_layer
-            │       main.tf
-            │       output.tf
-            │       variables.tf
-            │       version.tf
-            └───modules
-                ├───repo_terraform.azurerm.app_gtw...
-                ├───repo_terraform.azurerm.automation_account...
-                ├───repo_terraform.azurerm.azure_firewall...
-                ├───repo_terraform.azurerm.bastion_host...
-                ├───repo_terraform.azurerm.key_vault...
-                ├───repo_terraform.azurerm.key_vault_content...
-                ├───repo_terraform.azurerm.lock...
-                ├───repo_terraform.azurerm.log_analytics...
-                ├───repo_terraform.azurerm.mg...
-                ├───repo_terraform.azurerm.nsg...
-                ├───repo_terraform.azurerm.policy_initiative...
-                ├───repo_terraform.azurerm.private_dns...
-                ├───repo_terraform.azurerm.private_endpoint...
-                ├───repo_terraform.azurerm.public_ip...
-                ├───repo_terraform.azurerm.rbac...
-                ├───repo_terraform.azurerm.recovery_backup...
-                ├───repo_terraform.azurerm.rg...
-                ├───repo_terraform.azurerm.storage_account...
-                ├───repo_terraform.azurerm.udr...
-                ├───repo_terraform.azurerm.user_assigned_identity...
-                ├───repo_terraform.azurerm.virtual_gtw...
-                ├───repo_terraform.azurerm.vm...
-                ├───repo_terraform.azurerm.vnet...
-                └───repo_terraform.azurerm.vnet_peering...
-
+    ├───ISSUE_TEMPLATE
+    │       bug_report.md
+    │       enhancement.md
+    │
+    └───PULL_REQUEST_TEMPLATE
+            pull_request_template_detailed.md
+            pull_request_template_opensource.md
+            pull_request_template_simple.md
 ```
 
 ## Prerequisites
@@ -141,86 +155,142 @@ The solution is designed for deployment in five subscriptions. You can create
 - a separate Azure Resource Manager service connection for each of them at Azure subscription level scope;
 - or use a single one at scope of Management Group (with Azure subscriptions inside). 
 
-## Manual deploy instruction
-1. Clone the repository
-`git clone https://github.com/epam/azurelz.git`
-2. Move on it
-`cd azurelz`
-3. Replace tokens `#{ENV_AZURE_SUBSCRIPTION_ID}#` and `#{ENV_AZURE_SP_OBJECT_ID}#` in each config files:
-```pwsh
-(Get-Content .\AzureLandingZone\_configuration\_solutions\demo_solution_v2\epam.business.env.demo.tfvars).replace(
-'#{ENV_AZURE_SUBSCRIPTION_ID}#', '<SUBSCRIPTION1>') |
-Set-Content .\AzureLandingZone\_configuration\_solutions\demo_solution_v2\epam.business.env.demo.tfvars
-
-(Get-Content .\AzureLandingZone\_configuration\_solutions\demo_solution_v2\epam.business.env.demo.tfvars).replace(
-'#{ENV_AZURE_SP_OBJECT_ID}#', '<SERVICE_PRINCIPAL_OBJECT_ID>') |
-Set-Content .\AzureLandingZone\_configuration\_solutions\demo_solution_v2\epam.business.env.demo.tfvars
-
-the same replacement for rest of all tfvars files
-epam.dmz.env.demo.tfvars
-epam.gateway.env.demo.tfvars
-epam.identity.env.demo.tfvars
-epam.shared.env.demo.tfvars
+## Manual deploy instruction using PowerShell syntax
+1. Clone the repository and navigate on it
 ```
-4. Set connection environment variables for terraform
-```pwsh
-$env:ARM_SUBSCRIPTION_ID="00000000-1111-2222-3333-444444444444
-$env:ARM_TENANT_ID="00000000-1111-2222-3333-444444444444"
-$env:ARM_CLIENT_ID="00000000-1111-2222-3333-444444444444"
-$env:ARM_CLIENT_SECRET=' <secret for ARM_CLIENT_ID> '
+git clone https://github.com/epam/azurelz.git
+cd azurelz
 ```
-5. Deploy Base Layer to all environments
+2. Set variables:
 ```pwsh
-cd AzureLandingZone\_solutions\demo_solution_v2\base_layer
+# Terraform connection variables
+$env:ARM_CLIENT_ID     = "00000000-1111-2222-3333-444444444444"
+$env:ARM_CLIENT_SECRET = '<secret for ARM_CLIENT_ID>'
+
+# Subscription variables
+$env:ARM_TENANT_ID = "00000000-1111-2222-3333-444444444444"
+$sub_business      = "00000000-1111-2222-3333-444444444444"
+$sub_dmz           = "00000000-1111-2222-3333-444444444445"
+$sub_gateway       = "00000000-1111-2222-3333-444444444446"
+$sub_identity      = "00000000-1111-2222-3333-444444444447"
+$sub_shared        = "00000000-1111-2222-3333-444444444448"
+
+# SP variables
+$sp_object_id = 'SERVICE_PRINCIPAL_OBJECT_ID'
+```
+3. replace tokens `#{ENV_AZURE_SUBSCRIPTION_ID}#` and `#{ENV_AZURE_SP_OBJECT_ID}#` in each config files:
+```pwsh
+# business
+(Get-Content .\demo_solution\epam.business.env.demo.tfvars).replace(
+'#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_business) |
+Set-Content  .\demo_solution\epam.business.env.demo.tfvars
+
+(Get-Content .\demo_solution\epam.business.env.demo.tfvars).replace(
+'#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
+Set-Content  .\demo_solution\epam.business.env.demo.tfvars
+
+# dmz
+(Get-Content .\demo_solution\epam.dmz.env.demo.tfvars).replace(
+'#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_dmz) |
+Set-Content  .\demo_solution\epam.dmz.env.demo.tfvars
+
+(Get-Content .\demo_solution\epam.dmz.env.demo.tfvars).replace(
+'#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
+Set-Content  .\demo_solution\epam.dmz.env.demo.tfvars
+
+# gateway
+(Get-Content .\demo_solution\epam.gateway.env.demo.tfvars).replace(
+'#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_gateway) |
+Set-Content  .\demo_solution\epam.gateway.env.demo.tfvars
+
+(Get-Content .\demo_solution\epam.gateway.env.demo.tfvars).replace(
+'#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
+Set-Content  .\demo_solution\epam.gateway.env.demo.tfvars
+
+# identity
+(Get-Content .\demo_solution\epam.identity.env.demo.tfvars).replace(
+'#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_identity) |
+Set-Content  .\demo_solution\epam.identity.env.demo.tfvars
+
+(Get-Content .\demo_solution\epam.identity.env.demo.tfvars).replace(
+'#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
+Set-Content  .\demo_solution\epam.identity.env.demo.tfvars
+
+# shared
+(Get-Content .\demo_solution\epam.shared.env.demo.tfvars).replace(
+'#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_shared) |
+Set-Content  .\demo_solution\epam.shared.env.demo.tfvars
+
+(Get-Content .\demo_solution\epam.shared.env.demo.tfvars).replace(
+'#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
+Set-Content  .\demo_solution\epam.shared.env.demo.tfvars
+```
+
+4. Deploy Base Layer to all environments
+```pwsh
+cd base_layer
 terraform init
 terraform validate
-
 terraform workspace new epam.business.env.demo
-terraform apply -var-file="../../../_configuration/_solutions/demo_solution_v2/epam.business.env.demo.tfvars"
-
-$env:ARM_SUBSCRIPTION_ID="00000000-1111-2222-3333-444444444445"
 terraform workspace new epam.dmz.env.demo
-terraform apply -var-file="../../../_configuration/_solutions/demo_solution_v2/epam.dmz.env.demo.tfvars"
-
-$env:ARM_SUBSCRIPTION_ID="00000000-1111-2222-3333-444444444446"
 terraform workspace new epam.gateway.env.demo
-terraform apply -var-file="../../../_configuration/_solutions/demo_solution_v2/epam.gateway.env.demo.tfvars"
-
-$env:ARM_SUBSCRIPTION_ID="00000000-1111-2222-3333-444444444447"
 terraform workspace new epam.identity.env.demo
-terraform apply -var-file="../../../_configuration/_solutions/demo_solution_v2/epam.identity.env.demo.tfvars"
-
-$env:ARM_SUBSCRIPTION_ID="00000000-1111-2222-3333-444444444448"
 terraform workspace new epam.shared.env.demo
-terraform apply -var-file="../../../_configuration/_solutions/demo_solution_v2/epam.shared.env.demo.tfvars"
+
+$env:ARM_SUBSCRIPTION_ID = $sub_business
+terraform workspace select epam.business.env.demo
+terraform apply -var-file="../configuration/epam.business.env.demo.tfvars" -auto-approve
+
+$env:ARM_SUBSCRIPTION_ID = $sub_dmz
+terraform workspace select epam.dmz.env.demo
+terraform apply -var-file="../configuration/epam.dmz.env.demo.tfvars" -auto-approve
+
+$env:ARM_SUBSCRIPTION_ID = $sub_gateway
+terraform workspace select epam.gateway.env.demo
+terraform apply -var-file="../configuration/epam.gateway.env.demo.tfvars" -auto-approve
+
+$env:ARM_SUBSCRIPTION_ID = $sub_identity
+terraform workspace select epam.identity.env.demo
+terraform apply -var-file="../configuration/epam.identity.env.demo.tfvars" -auto-approve
+
+$env:ARM_SUBSCRIPTION_ID = $sub_shared
+terraform workspace select epam.shared.env.demo
+terraform apply -var-file="../configuration/epam.shared.env.demo.tfvars" -auto-approve
 ```
-6. Deploy Work Layer to all environments
+
+5. Deploy Work Layer to all environments
 ```pwsh
 cd ..\work_layer
 terraform init
 terraform validate
+terraform workspace new epam.business.env.demo
+terraform workspace new epam.dmz.env.demo
+terraform workspace new epam.gateway.env.demo
+terraform workspace new epam.identity.env.demo
+terraform workspace new epam.shared.env.demo
 
-$env:ARM_SUBSCRIPTION_ID="00000000-1111-2222-3333-444444444444"
+$env:ARM_SUBSCRIPTION_ID = $sub_business
 terraform workspace select epam.business.env.demo
-terraform apply -var-file="../../../_configuration/_solutions/demo_solution_v2/epam.business.env.demo.tfvars"
+terraform apply -var-file="../configuration/epam.business.env.demo.tfvars" -auto-approve
 
-$env:ARM_SUBSCRIPTION_ID="00000000-1111-2222-3333-444444444445"
+$env:ARM_SUBSCRIPTION_ID = $sub_dmz
 terraform workspace select epam.dmz.env.demo
-terraform apply -var-file="../../../_configuration/_solutions/demo_solution_v2/epam.dmz.env.demo.tfvars"
+terraform apply -var-file="../configuration/epam.dmz.env.demo.tfvars" -auto-approve
 
-$env:ARM_SUBSCRIPTION_ID="00000000-1111-2222-3333-444444444446"
+$env:ARM_SUBSCRIPTION_ID = $sub_gateway
 terraform workspace select epam.gateway.env.demo
-terraform apply -var-file="../../../_configuration/_solutions/demo_solution_v2/epam.gateway.env.demo.tfvars"
+terraform apply -var-file="../configuration/epam.gateway.env.demo.tfvars" -auto-approve
 
-$env:ARM_SUBSCRIPTION_ID="00000000-1111-2222-3333-444444444447"
+$env:ARM_SUBSCRIPTION_ID = $sub_identity
 terraform workspace select epam.identity.env.demo
-terraform apply -var-file="../../../_configuration/_solutions/demo_solution_v2/epam.identity.env.demo.tfvars"
+terraform apply -var-file="../configuration/epam.identity.env.demo.tfvars" -auto-approve
 
-$env:ARM_SUBSCRIPTION_ID="00000000-1111-2222-3333-444444444448"
+$env:ARM_SUBSCRIPTION_ID = $sub_shared
 terraform workspace select epam.shared.env.demo
-terraform apply -var-file="../../../_configuration/_solutions/demo_solution_v2/epam.shared.env.demo.tfvars"
+terraform apply -var-file="../configuration/epam.shared.env.demo.tfvars" -auto-approve
 ```
-7. For destroy you need to use `terraform destroy` instead `terraform apply` and start destroy with Work layer, then destroy Base layer
+
+6. For destroy you need to start with Work layer, then destroy Base layer. Use terraform select <workspace> for switching to target environment.
 
 
 # Terraform Application Documentation
@@ -228,12 +298,11 @@ terraform apply -var-file="../../../_configuration/_solutions/demo_solution_v2/e
 - [Terraform-initial-resources-management](./docs/Terraform-initial-resources-management.md)
 - [Terraform-resources-deployment-order](./docs/Terraform-resources-deployment-order.md)
 
-
 # Contributing
 
-Please check out our [contributing guidelines](./CONTRIBUTING.md).
+Please check out our [contributing guidelines](CONTRIBUTING.md).
 
-# License
+#License
 
 Copyright (C) 2023 EPAM Systems Inc.
 The LICENSE file in the root of this project applies unless otherwise indicated. 

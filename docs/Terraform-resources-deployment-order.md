@@ -1,3 +1,5 @@
+
+
 # Introduction
 
 Within any Azure Cloud infrastructure, there are a lot of dependencies between resources.
@@ -34,4 +36,4 @@ The Azure Landing Zone has a big amount of resources that are possible to deploy
 | 050 | Bastion, UDRs, Routeserver, Shared Image Gallery | Can be deployed in parallel |
 | 055 | Application Gateway, Recovery Vault Services, VM(need to be revised) | Can be deployed in parallel |
 | 060 | VMs(with no DB or other dependency, eg.: AD servers) | - |
-| 065+ | Other solutions | - |
+| 065+ | Other solutions, still need need to be categorized | - |

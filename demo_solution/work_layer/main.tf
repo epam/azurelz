@@ -6,9 +6,7 @@ data "terraform_remote_state" "tfstate" {
     path = "${var.backend_tfstate_file_path}/terraform.tfstate"
   }
 }
-
 # Get data from tfstate files in all environments (permanent)
-#data "terraform_remote_state" "vnet" {
 data "terraform_remote_state" "base" {
   for_each = toset(var.backend_tfstate_file_path_list)
   backend  = "local"

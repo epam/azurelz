@@ -1,3 +1,6 @@
+
+
+
 # Introduction
 
 
@@ -21,13 +24,13 @@ This implies that if a permission is configured at the subscription level, it wi
 
 To enhance security, one option is to move the storage accounts used for the Terraform backend to a separate subscription. This approach is suitable when there is a dedicated team responsible for managing the entire infrastructure lifecycle. The diagram below illustrates the subscription model, taking into account that the Terraform backend will be placed in a separate subscription:
 
-![Terraform_in_dedicated_subscription.png](./.attachments//Terraform_dedicated_subscription.png)
+![Terraform_in_dedicated_subscription.png](./.attachments/Terraform_dedicated_subscription.png)
 
 However, in cases where there are multiple dedicated teams working on different tasks, and each team must have the ability to manage their own dedicated environment based on an Azure Subscription, an alternative approach can be used. This approach allows teams to manage standalone, self-contained environments with their own Terraform automation assets, such as pipelines, configuration and module files, and an independent Azure storage account to store the Terraform state files for the specific environment.
 
-![Terraform_in_multiple_subscriptions](./.attachments//Terraform_multiple_subscriptions.png)
+![Terraform_in_multiple_subscriptions](./.attachments/Terraform_multiple_subscriptions.png)
 
-[Terraform_subscription.drawio.xml](./.attachments//Terraform_subscription.drawio.xml)
+[Terraform_subscription.drawio.xml](./.attachments/Terraform_subscription.drawio.xml)
 
 
 # Azure service principal
@@ -38,11 +41,11 @@ For Terraform deployment automation it is recommended to use service principal (
 The SP could be created one per team which is going to manage infrastructure and then stored within Azure DevOps.
 Having several SPs allows to manage access to resources granularly and avoid possible infrastructure corruption when having only one Terraform SP with unlimited permissions.
 
-![Terraform_SPNs_1.png](./.attachments//Terraform_SPNs_1-f6b960a6-5fde-4e18-96d9-a8fd4a58b32c.png)
+![Terraform_SPNs_1.png](./.attachments/Terraform_SPNs_1-f6b960a6-5fde-4e18-96d9-a8fd4a58b32c.png)
 
 The SP secret is stored within Azure DevOps variable groups or mapped through variable group from Azure Key Vault as secure variable and used during the automated deployments.
 
-![Terraform_SPNs_2.png](./.attachments//Terraform_SPNs_2-8d338526-5d2e-4cfe-aee8-f1c15a9c439b.png)
+![Terraform_SPNs_2.png](./.attachments/Terraform_SPNs_2-8d338526-5d2e-4cfe-aee8-f1c15a9c439b.png)
 
 
 # Azure resource groups
@@ -54,7 +57,7 @@ Following the idea of several SPs for automated deployments, the number of resou
 
 The service principal will have **Contributor** or **Owner** access to target subscriptions and **Contributor** to its resource group with a storage account.
 
-![Terraform_SPNs_3.png](./.attachments//Terraform_SPNs_3-b8897918-d379-44f4-981b-af63d1a315f3.png)
+![Terraform_SPNs_3.png](./.attachments/Terraform_SPNs_3-b8897918-d379-44f4-981b-af63d1a315f3.png)
 
 All these Terraform resource groups within the dedicated subscription have at least one storage account and optional Azure Key Vaults if used.
 
@@ -78,8 +81,8 @@ The following storage account features are used to increase Terraform state avai
 |change feed|Enabled by default, retention time is 180 days|Provides transaction logs of all the changes that occur to the blobs and the blob metadata in your storage account|
 
 The applied configuration is recommended and can be overridden in the:
-- _configuration/000_prerequisites/sa_template.json file if you deploy your infrastructure as terraform modules.
-- _configuration/_solutions/*/000_prerequisites/sa_template.json files if you deploy your infrastructure as solution pipeline.
+- [_configuration/000_prerequisites/sa_template.json](https://dev.azure.com/EPMC-ACM/AzureLandingZone/_git/epam.alz.terraform?path=/_configuration/000_prerequisites/sa_template.json) file if you deploy your infrastructure as terraform modules.
+- [_configuration/_solutions/*/000_prerequisites/sa_template.json](https://dev.azure.com/EPMC-ACM/AzureLandingZone/_git/epam.alz.terraform?path=/_configuration/_solutions) files if you deploy your infrastructure as solution pipeline.
 
 
 # Azure Key Vault
