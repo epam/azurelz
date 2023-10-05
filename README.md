@@ -3,9 +3,7 @@
 # Overview
 **Demo** is a demo solution that allows us to deploy an infrastructure to get acquainted with the capabilities that Azure Landing Zone provides. It represents a hub-and-spoke type of network architecture in Azure. The hub virtual network acts as a central point of connectivity for many space virtual networks. The hub can also be used as a connectivity point for on-premise networks. The spoke virtual networks communicate with the hub and are useful for isolating workloads. Using different subscriptions, the **Demo** solution allows you to flexibly and granularly manage resources and share architecture costs between different parts of the business.
 
-
 # Architecture
-
 
 **Demo** solution based on the configuration for existing Terraform root modules. It is a complete standalone solution and allows you to create a network infrastructure, workload (Storage Account, VMs, etc.) and management resources.
 
@@ -70,86 +68,13 @@ For Infrastructure Key Vault and Application Key Vault diagnostic settings are e
 ![**Demo_solution_KV**](./docs/.attachments/Demo_solution_KV.png)
 
 
-## File structure
-
-```console
-│   CONTRIBUTING.md
-│   LICENSE
-│   README.md
-│
-├───demo_solution
-│   ├───base_layer
-│   │       main.tf
-│   │       output.tf
-│   │       variables.tf
-│   │       version.tf
-│   │
-│   ├───work_layer
-│   │       main.tf
-│   │       output.tf
-│   │       runbook-fw.ps1
-│   │       variables.tf
-│   │       version.tf
-|   |
-│   ├───configuration
-│   │       epam.business.env.demo.tfvars
-│   │       epam.dmz.env.demo.tfvars
-│   │       epam.gateway.env.demo.tfvars
-│   │       epam.identity.env.demo.tfvars
-│   │       epam.shared.env.demo.tfvars
-│   │
-│   └───modules
-│      ├───repo_terraform.azurerm.app_gtw...
-│      ├───repo_terraform.azurerm.automation_account...
-│      ├───repo_terraform.azurerm.azure_firewall...
-│      ├───repo_terraform.azurerm.bastion_host...
-│      ├───repo_terraform.azurerm.key_vault...
-│      ├───repo_terraform.azurerm.key_vault_content...
-│      ├───repo_terraform.azurerm.lock...
-│      ├───repo_terraform.azurerm.log_analytics...
-│      ├───repo_terraform.azurerm.mg...
-│      ├───repo_terraform.azurerm.nsg...
-│      ├───repo_terraform.azurerm.policy_initiative...
-│      ├───repo_terraform.azurerm.private_dns...
-│      ├───repo_terraform.azurerm.private_endpoint...
-│      ├───repo_terraform.azurerm.public_ip...
-│      ├───repo_terraform.azurerm.rbac...
-│      ├───repo_terraform.azurerm.recovery_backup...
-│      ├───repo_terraform.azurerm.rg...
-│      ├───repo_terraform.azurerm.storage_account...
-│      ├───repo_terraform.azurerm.udr...
-│      ├───repo_terraform.azurerm.user_assigned_identity...
-│      ├───repo_terraform.azurerm.virtual_gtw...
-│      ├───repo_terraform.azurerm.vm...
-│      ├───repo_terraform.azurerm.vnet...
-│      └───repo_terraform.azurerm.vnet_peering...
-│   
-├───docs
-│    │   Terraform-code-development.md
-│    │   Terraform-initial-resources-management.md
-│    │   Terraform-resources-deployment-order.md
-│    │
-│    └───.attachments...
-│
-└───.github
-    │   CODEOWNERS
-    │
-    ├───ISSUE_TEMPLATE
-    │       bug_report.md
-    │       enhancement.md
-    │
-    └───PULL_REQUEST_TEMPLATE
-            pull_request_template_detailed.md
-            pull_request_template_opensource.md
-            pull_request_template_simple.md
-```
-
 ## Prerequisites
 
 
 Since **Demo** solution based on Azure Cloud environment and Azure DevOps service specifically - we need:
-- Azure Cloud subscription;
+- Azure Cloud subscription(s);
 - Azure Cloud Service Principal with "Management Group Contributor" and "Owner" (at least "Contributor" and "User Access Administrator" if "Owner" is not available) permissions at the Root Management Group level;
+- Tools: git, terraform, powershell
 
 The solution is designed for deployment in five subscriptions. You can create 
 - a separate Azure Resource Manager service connection for each of them at Azure subscription level scope;
