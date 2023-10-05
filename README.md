@@ -70,7 +70,7 @@ For Infrastructure Key Vault and Application Key Vault diagnostic settings are e
 ![**Demo_solution_KV**](./docs/.attachments/Demo_solution_KV.png)
 
 
-##File structure
+## File structure
 
 ```console
 │   CONTRIBUTING.md
