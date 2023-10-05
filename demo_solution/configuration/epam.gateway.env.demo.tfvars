@@ -192,7 +192,7 @@ public_ips = [
     sku               = "Standard"
     zones             = ["1", "2", "3"]
     ip_version        = "IPv4"
-    domain_name_label = "gat-pip-weeu-gateway-hubnetfw-011"
+    domain_name_label = "gat-pip-weeu-gaw-hubnetfw-011"
 
     diagnostic_setting = {
       name                       = "gat-pip-weeu-s-hubnetfw-01-diag"
@@ -219,7 +219,7 @@ public_ips = [
     sku               = "Standard"
     zones             = ["1", "2", "3"]
     ip_version        = "IPv4"
-    domain_name_label = "gat-pip-weeu-gateway-vpngtw-011"
+    domain_name_label = "gat-pip-weeu-gaw-vpngtw-011"
 
     diagnostic_setting = {
       name                       = "gat-pip-weeu-s-vpngtw-01-diag"
@@ -246,7 +246,7 @@ public_ips = [
     sku               = "Standard"
     zones             = ["1", "2", "3"]
     ip_version        = "IPv4"
-    domain_name_label = "gat-pip-weeu-gateway-bstn-011"
+    domain_name_label = "gat-pip-weeu-gaw-bstn-011"
 
     diagnostic_setting = {
       name                       = "gat-pip-weeu-s-bstn-01-diag"

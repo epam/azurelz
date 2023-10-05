@@ -203,7 +203,7 @@ private_dns_zones = [
 # 035_keyvault
 keyvaults = [
   {
-    name                            = "sh-kv-weeu-s-sh-shared-01"
+    name                            = "sh-kv-weeu-s-sh-sha-01"
     rg_name                         = "sh-rg-weeu-s-infra-01"
     sku                             = "standard"
     soft_delete_retention_days      = "90"
@@ -237,7 +237,7 @@ keyvaults = [
     }
 
     diagnostic_setting = {
-      name                       = "sh-kv-weeu-s-sh-shared-01-diag"
+      name                       = "sh-kv-weeu-s-sh-sha-01-diag"
       log_analytics_workspace_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/sh-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/sh-la-weeu-p-centralShared-01"
       storage_account_id         = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/sh-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/shstrpcsharedla0001"
       log_category               = ["AuditEvent", "AzurePolicyEvaluationDetails"]
@@ -255,7 +255,7 @@ keyvaults = [
     }
   },
   {
-    name                            = "sh-kv-weeu-s-app-shared-01"
+    name                            = "sh-kv-weeu-s-app-sha-01"
     rg_name                         = "sh-rg-weeu-s-infra-01"
     sku                             = "standard"
     soft_delete_retention_days      = "90"
@@ -284,13 +284,13 @@ keyvaults = [
         assigment = {
           role_definition_name = "Key Vault Administrator"
           description          = "Assigment the KeyVault administrator role"
-          scope                = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/sh-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/sh-kv-weeu-s-app-shared-01"
+          scope                = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/sh-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/sh-kv-weeu-s-app-sha-01"
         }
       }
     ]
 
     diagnostic_setting = {
-      name                       = "sh-kv-weeu-s-app-shared-01-diag"
+      name                       = "sh-kv-weeu-s-app-sha-01-diag"
       log_analytics_workspace_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/sh-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/sh-la-weeu-p-centralShared-01"
       storage_account_id         = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/sh-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/shstrpcsharedla0001"
       log_category               = ["AuditEvent", "AzurePolicyEvaluationDetails"]
@@ -312,7 +312,7 @@ keyvaults = [
 # 035_keyvaultcontent
 keyvaultcontents = [
   {
-    keyvault_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/sh-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/sh-kv-weeu-s-sh-shared-01"
+    keyvault_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/sh-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/sh-kv-weeu-s-sh-sha-01"
 
     secrets = [
       {
@@ -323,8 +323,8 @@ keyvaultcontents = [
 
   },
   {
-    keyvault_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/sh-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/sh-kv-weeu-s-app-shared-01"
-    kv_name     = "bus-kv-weeu-s-app-shared-01"
+    keyvault_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/sh-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/sh-kv-weeu-s-app-sha-01"
+    kv_name     = "bus-kv-weeu-s-app-sha-01"
 
     secrets = [
       {
@@ -340,7 +340,7 @@ keyvaultcontents = [
           assigment = {
             role_definition_name = "Key Vault Secrets Officer"
             description          = "Perform any action on the secrets of a key vault, except manage permissions."
-            scope                = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/sh-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/sh-kv-weeu-s-app-shared-01/secrets/secret"
+            scope                = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/sh-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/sh-kv-weeu-s-app-sha-01/secrets/secret"
           }
           principal_id = "#{ENV_AZURE_SP_OBJECT_ID}#"
         }
@@ -406,9 +406,9 @@ vms = [
     vm_rg_name                       = "sh-rg-weeu-s-compute-01"
     vm_size                          = "Standard_B2s_v2" //"Standard_D2s_v3" is unabailable in westeurope
     vm_admin_username                = "epamuser"
-    admin_secret_kv_name             = "sh-kv-weeu-s-sh-shared-01"
+    admin_secret_kv_name             = "sh-kv-weeu-s-sh-sha-01"
     admin_secret_kv_rg_name          = "sh-rg-weeu-s-infra-01"
-    kv_name                          = "sh-kv-weeu-s-sh-shared-01"
+    kv_name                          = "sh-kv-weeu-s-sh-sha-01"
     kv_rg_name                       = "sh-rg-weeu-s-infra-01"
     zone_vm                          = "1"
     vm_guest_os                      = "windows"

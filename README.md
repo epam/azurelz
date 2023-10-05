@@ -1,6 +1,6 @@
 
 
-#Overview
+# Overview
 **Demo** is a demo solution that allows us to deploy an infrastructure to get acquainted with the capabilities that Azure Landing Zone provides. It represents a hub-and-spoke type of network architecture in Azure. The hub virtual network acts as a central point of connectivity for many space virtual networks. The hub can also be used as a connectivity point for on-premise networks. The spoke virtual networks communicate with the hub and are useful for isolating workloads. Using different subscriptions, the **Demo** solution allows you to flexibly and granularly manage resources and share architecture costs between different parts of the business.
 
 
@@ -160,6 +160,7 @@ The solution is designed for deployment in five subscriptions. You can create
 ```
 git clone https://github.com/epam/azurelz.git
 cd azurelz
+
 ```
 2. Set variables:
 ```pwsh
@@ -177,58 +178,60 @@ $sub_shared        = "00000000-1111-2222-3333-444444444448"
 
 # SP variables
 $sp_object_id = 'SERVICE_PRINCIPAL_OBJECT_ID'
+
 ```
 3. replace tokens `#{ENV_AZURE_SUBSCRIPTION_ID}#` and `#{ENV_AZURE_SP_OBJECT_ID}#` in each config files:
 ```pwsh
 # business
-(Get-Content .\demo_solution\epam.business.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\epam.business.env.demo.tfvars).replace(
 '#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_business) |
-Set-Content  .\demo_solution\epam.business.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\epam.business.env.demo.tfvars
 
-(Get-Content .\demo_solution\epam.business.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\epam.business.env.demo.tfvars).replace(
 '#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
-Set-Content  .\demo_solution\epam.business.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\epam.business.env.demo.tfvars
 
 # dmz
-(Get-Content .\demo_solution\epam.dmz.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\epam.dmz.env.demo.tfvars).replace(
 '#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_dmz) |
-Set-Content  .\demo_solution\epam.dmz.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\epam.dmz.env.demo.tfvars
 
-(Get-Content .\demo_solution\epam.dmz.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\epam.dmz.env.demo.tfvars).replace(
 '#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
-Set-Content  .\demo_solution\epam.dmz.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\epam.dmz.env.demo.tfvars
 
 # gateway
-(Get-Content .\demo_solution\epam.gateway.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\epam.gateway.env.demo.tfvars).replace(
 '#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_gateway) |
-Set-Content  .\demo_solution\epam.gateway.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\epam.gateway.env.demo.tfvars
 
-(Get-Content .\demo_solution\epam.gateway.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\epam.gateway.env.demo.tfvars).replace(
 '#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
-Set-Content  .\demo_solution\epam.gateway.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\epam.gateway.env.demo.tfvars
 
 # identity
-(Get-Content .\demo_solution\epam.identity.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\epam.identity.env.demo.tfvars).replace(
 '#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_identity) |
-Set-Content  .\demo_solution\epam.identity.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\epam.identity.env.demo.tfvars
 
-(Get-Content .\demo_solution\epam.identity.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\epam.identity.env.demo.tfvars).replace(
 '#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
-Set-Content  .\demo_solution\epam.identity.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\epam.identity.env.demo.tfvars
 
 # shared
-(Get-Content .\demo_solution\epam.shared.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\epam.shared.env.demo.tfvars).replace(
 '#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_shared) |
-Set-Content  .\demo_solution\epam.shared.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\epam.shared.env.demo.tfvars
 
-(Get-Content .\demo_solution\epam.shared.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\epam.shared.env.demo.tfvars).replace(
 '#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
-Set-Content  .\demo_solution\epam.shared.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\epam.shared.env.demo.tfvars
+
 ```
 
 4. Deploy Base Layer to all environments
 ```pwsh
-cd base_layer
+cd .\demo_solution\base_layer\
 terraform init
 terraform validate
 terraform workspace new epam.business.env.demo
@@ -256,6 +259,7 @@ terraform apply -var-file="../configuration/epam.identity.env.demo.tfvars" -auto
 $env:ARM_SUBSCRIPTION_ID = $sub_shared
 terraform workspace select epam.shared.env.demo
 terraform apply -var-file="../configuration/epam.shared.env.demo.tfvars" -auto-approve
+
 ```
 
 5. Deploy Work Layer to all environments
@@ -288,6 +292,7 @@ terraform apply -var-file="../configuration/epam.identity.env.demo.tfvars" -auto
 $env:ARM_SUBSCRIPTION_ID = $sub_shared
 terraform workspace select epam.shared.env.demo
 terraform apply -var-file="../configuration/epam.shared.env.demo.tfvars" -auto-approve
+
 ```
 
 6. For destroy you need to start with Work layer, then destroy Base layer. Use terraform select <workspace> for switching to target environment.

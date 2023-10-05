@@ -176,7 +176,7 @@ nsgs = [
 # 035_keyvault
 keyvaults = [
   {
-    name                            = "bus-kv-weeu-s-sh-business-01"
+    name                            = "bus-kv-weeu-s-sh-bus-01"
     rg_name                         = "bus-rg-weeu-s-infra-01"
     sku                             = "standard"
     soft_delete_retention_days      = "90"
@@ -206,7 +206,7 @@ keyvaults = [
       ]
     }
     diagnostic_setting = {
-      name                       = "bus-kv-weeu-s-sh-business-01-giag"
+      name                       = "bus-kv-weeu-s-sh-bus-01-giag"
       log_analytics_workspace_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/bus-la-weeu-p-central-01"
       storage_account_id         = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/busstrpcentralla0001"
       log_category               = ["AuditEvent", "AzurePolicyEvaluationDetails"]
@@ -224,7 +224,7 @@ keyvaults = [
     }
   },
   {
-    name                            = "bus-kv-weeu-s-app-business-01"
+    name                            = "bus-kv-weeu-s-app-bus-01"
     rg_name                         = "bus-rg-weeu-s-infra-01"
     sku                             = "standard"
     soft_delete_retention_days      = "90"
@@ -253,13 +253,13 @@ keyvaults = [
         assigment = {
           role_definition_name = "Key Vault Administrator"
           description          = "Assigment the KeyVault administrator role"
-          scope                = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/bus-kv-weeu-s-app-business-01"
+          scope                = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/bus-kv-weeu-s-app-bus-01"
         }
       }
     ]
 
     diagnostic_setting = {
-      name                       = "bus-kv-weeu-s-app-business-01-diag"
+      name                       = "bus-kv-weeu-s-app-bus-01-diag"
       log_analytics_workspace_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/bus-la-weeu-p-central-01"
       storage_account_id         = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/busstrpcentralla0001"
       log_category               = ["AuditEvent", "AzurePolicyEvaluationDetails"]
@@ -281,7 +281,7 @@ keyvaults = [
 # 035_keyvaultcontent
 keyvaultcontents = [
   {
-    keyvault_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/bus-kv-weeu-s-sh-business-01"
+    keyvault_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/bus-kv-weeu-s-sh-bus-01"
 
     secrets = [
       {
@@ -292,8 +292,8 @@ keyvaultcontents = [
 
   },
   {
-    keyvault_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/bus-kv-weeu-s-app-business-01"
-    kv_name     = "bus-kv-weeu-s-app-business-01"
+    keyvault_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/bus-kv-weeu-s-app-bus-01"
+    kv_name     = "bus-kv-weeu-s-app-bus-01"
 
     secrets = [
       {
@@ -309,7 +309,7 @@ keyvaultcontents = [
           assigment = {
             role_definition_name = "Key Vault Secrets Officer"
             description          = "Perform any action on the secrets of a key vault, except manage permissions."
-            scope                = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/bus-kv-weeu-s-app-business-01/secrets/secret"
+            scope                = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/bus-kv-weeu-s-app-bus-01/secrets/secret"
           }
           principal_id = "#{ENV_AZURE_SP_OBJECT_ID}#"
         }
@@ -321,7 +321,7 @@ keyvaultcontents = [
 # 035_storageaccount
 storage_accounts = [
   {
-    storage_name                    = "busstorvmsbsbusiness011"
+    storage_name                    = "busstorvmsbsbus011"
     rg_name                         = "bus-rg-weeu-s-infra-01"
     location                        = "westeurope"
     account_tier                    = "Standard"
@@ -362,7 +362,7 @@ storage_accounts = [
     }
 
     diagnostic_setting = {
-      name                       = "busstorvmsbsbusiness011-diag"
+      name                       = "busstorvmsbsbus011-diag"
       storage_account_id         = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/busstrpcentralla0001"
       log_analytics_workspace_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/bus-la-weeu-p-central-01"
       metric                     = ["Capacity", "Transaction"]
@@ -404,9 +404,9 @@ vms = [
     vm_rg_name                       = "bus-rg-weeu-s-compute-01"
     vm_size                          = "Standard_B2s_v2" //"Standard_D2s_v3" is unabailable in westeurope
     vm_admin_username                = "epamuser"
-    admin_secret_kv_name             = "bus-kv-weeu-s-sh-business-01"
+    admin_secret_kv_name             = "bus-kv-weeu-s-sh-bus-01"
     admin_secret_kv_rg_name          = "bus-rg-weeu-s-infra-01"
-    kv_name                          = "bus-kv-weeu-s-sh-business-01"
+    kv_name                          = "bus-kv-weeu-s-sh-bus-01"
     kv_rg_name                       = "bus-rg-weeu-s-infra-01"
     zone_vm                          = "1"
     vm_guest_os                      = "windows"
