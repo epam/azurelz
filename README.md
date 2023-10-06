@@ -227,8 +227,8 @@ terraform apply -var-file="../configuration/epam.shared.env.demo.tfvars" -auto-a
 6. For destroy you need to start with Work layer, then destroy Base layer. Use terraform select <workspace> for switching to target environment.
 
 
-# Terraform Best practices
- Some Terraform best practices you can found [here](./docs/Best-practices-for-using-Terraform.md)
+# Documents
+- Some Terraform best practices you can found [here](./docs/Best-practices-for-using-Terraform.md)
 
 
 # Contributing
