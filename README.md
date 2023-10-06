@@ -51,7 +51,7 @@ The **Demo** solution is divided into 5 environments. Subscriptions are used as 
 - The **Gateway** is the entry-point of the whole solution that provides access to the solution from the Internet or on-premise networks and provides communication between the other environments.
 - **Shared** contains shared resources that need to be accessed for the functioning of the solution elements in the rest of the environment.
 - **Identity** - designed for resources that store sensitive information and provide access control. This creates an opportunity to further protect our shared services like Domain Controllers, different authentication services, secure data management systems and etc..
-- **DMZ** evironment is designed to place resources open for Internet access, which need to be separated from the internal network. DMZs function as a buffer zone between the public Internet and the rest of the environments.
+- **DMZ** environment is designed to place resources open for Internet access, which need to be separated from the internal network. DMZs function as a buffer zone between the public Internet and the rest of the environments.
 - **Business** environment is designed to deploy the resources that are used initially to achieve the goals and objectives of the business.
 
 The diagram below provides a high-level overview of the solution:
