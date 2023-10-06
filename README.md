@@ -228,7 +228,7 @@ terraform apply -var-file="../configuration/epam.shared.env.demo.tfvars" -auto-a
 
 
 # Documents
-- Some Terraform best practices you can found [here](./docs/Best-practices-for-using-Terraform.md)
+- Some Terraform best practices you can find [here](./docs/Best-practices-for-using-Terraform.md)
 
 
 # Contributing
