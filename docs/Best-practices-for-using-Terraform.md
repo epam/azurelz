@@ -1,6 +1,3 @@
-[[_TOC_]]
-
-
 # General recommendations and requirements
 
 
@@ -442,13 +439,6 @@ vnet = [
   ][var.vnet_aks != null ? 0 : 1]
 ```
 
-
-# Root module requirements
-
-
-When working with root modules, the same general statements and recommendations for writing modules apply. However, there are additional recommendations for root modules that covered belowe and [here](/IaC-Governance/Terraform-code-development).
-
-
 ## Backend and providers configuration
 
 
@@ -467,12 +457,6 @@ It is recommended to export all available information from the child modules tha
 
 
 Module variables must be specified in the variables.tf file. The root module variables specification must support all child module variables used by the root module. This ensures that users of your root module can provide the necessary inputs for all child modules, allowing for proper configuration and customization.
-
-
-# Child module requirements
-
-
-When working with child modules, the same general statements and recommendations for writing modules apply. However, child modules have their own specific requirements and recommendations, as covered [here](/IaC-Governance/Terraform-code-development). By following these child module recommendations, you can create a maintainable Terraform codebase, ensuring proper integration and interaction between root and child modules.
 
 
 ## Module outputs
