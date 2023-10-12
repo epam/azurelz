@@ -1,87 +1,101 @@
-
-
 # Overview
-This solution is a part of `EPAM Azure Landing Zone`, which is the output of a multi subscription Azure environment that accounts for scale, security, governance, networking, and identity. Azure landing zones enable application migrations and the greenfield development at enterprise scale in Azure. These zones consider all platform resources that are required to support the customer's application portfolio and don't differentiate between infrastructure as a service or platform as a service.
 
-**Demo** is a demo solution that allows us to deploy an infrastructure to get acquainted with the capabilities that Azure Landing Zone provides. It represents a hub-and-spoke type of network architecture in Azure. The hub virtual network acts as a central point of connectivity for many space virtual networks. The hub can also be used as a connectivity point for on-premise networks. The spoke virtual networks communicate with the hub and are useful for isolating workloads. Using different subscriptions, the **Demo** solution allows you to flexibly and granularly manage resources and share architecture costs between different parts of the business.
+Starting Cloud Journey is a hard and challenging process for every company. Setting up an initial technical baseline is a crucial part of this process. Making mistakes on initial step brings not only security, reputational and financial risks, but also takes a great amount of time to fix them in the future.​
+
+EPAM experienced cloud engineering team enforced by unified approach, predefined templates and codified baseline architecture footprints can make this process fast, effective and highly adoptive to client’s business goals by utilizing **EPAM Azure Landing Zone offerings**. These Offerings are based on Cloud best practices and EPAM recommendations empowered by Infrastructure as a Code templates adopted to Customer’s cloud demand will reduce risks of mistakes in fundamental Cloud setup process or during the delivery of platform, business, and secure landing zones.
+
+This **Demo** solution is a part of **EPAM Azure Landing Zone offerings** that delivers a demo environment for playground or sandboxes. The demo solutions follow the start small and expand approach that accounts for scale, security, governance, networking, and identity. The solution allows you to deploy an infrastructure to get acquainted with the capabilities of Azure Landing Zone Offerings/frameworks and IaC approach. 
 
 
 # Architecture
 
+The **Demo** solution is based on the Terraform and EPAM owned child modules for each Azure Resource. It is a complete standalone solution that allows you to build a fundament of your cloud infrastructure. The **Demo** solution consist of the following components:
 
-**Demo** solution based on the configuration for existing Terraform root modules. It is a complete standalone solution and allows you to create a network infrastructure, workload (Storage Account, VMs, etc.) and management resources.
+- Governance
+  - Management groups
+  - Policy Definitions
+  - Policy Initiative
+  - Resource group
+  - Diagnostic settings
+  - Automation account
+- Network
+  - Virtual Networks
+  - Virtual Network Peering
+  - Subnets
+  - Private endpoint
+  - Network Security Groups
+  - Application Security Groups
+  - Azure Firewall
+  - Bastion
+  - UDR
+  - Application Gateway
+  - Private DNS
+  - Virtual Network gateway
+  - Public IP
+- Storage
+  - Storage account
+  - Log Analytics workspace
+- Security
+  - Key vault
+  - Defender for Coud
+  - Managed Identity
+- Workload
+   - VM
+   - VNIC
+   - Disk
 
-- Management groups - provide a governance scope above subscriptions;
-- Policy Initiative - Azure Policy sets that help implement organizational standards and assess compliance at scale;
-- Resource group - holds related resources for a **Demo** solution;
-- Storage account - used by Terraform for storing state files and performing the role of a workload;
-- Log Analytics workspace - a workspace is a location where data from resources and solutions can be logged;
-- Diagnostic settings - defines the settings for data logs and metrics;
-- Automation account - used to automate the management of solutions resources;
-- Public IP - provides public access Azure Firewall, Application Gateway and Virtual Gateway;
-- VNET - virtual network process network traffic for the whole solution;
-- Subnets - enable virtual network segmentation for resources from a **Demo** solution;
-- Private endpoint - network interface for access to Storage Account;
-- NSG - network security group filters network traffic to\from resources a **Demo** solution;
-- Private DNS - provides DNS service to manage and resolve domain names in a virtual network;
-- VirtualGTW - encrypts traffic between an Azure virtual network and an on-premises location over the public Internet;
-- Key vault - stores VM secrets;
-- Vnet Peering - enables connection between virtual networks;
-- Azure Firewall - it is used to access the solution from the Internet and manage traffic between the spokes and the hub;
-- Bastion - provides secure connectivity to the VMs from a **Demo** solution;
-- UDR - route traffic between Shared spoke and Firewall;
-- Application Gateway - web traffic load balancer for DMZ spoke;
-- VM - virtual machines for test the functionality of the solution elements;
-- VNIC - virtual network interface provides network access for VM;
-- Disk - VM disk stores VM data.
 
-During deployment, passwords for virtual machines are transmitted by secrets located in KeyVault (they are also deployed in the solution). After the deployment, it is possible to connect to virtual machines using the Bastion service. Private Endpoint is used to access the Storage Account. NSG and Firewall rules are configured.
 
+The **Demo** solution is based on the traditional hub-and-spoke network topology where hub virtual network acts as a central point of connectivity for other virtual networks. The hub can also be used as a connectivity point for on-premises networks. 
+
+During deployment, passwords for virtual machines are transmitted by secrets located in Key Vault (they are also deployed in the solution). After the deployment, it is possible to connect to virtual machines using the Bastion service. Private Endpoint is used to access the Storage Account. NSG and Firewall rules are also configured.
+
+The diagram below provides a high-level overview of the solution:
+
+![**Demo**](/docs/.attachments/Demo_solution_v1.1.png)
 
 ## Organizational structure
 
 
-The **Demo** solution integrates the deployment of management groups to efficiently manage access, policies and subscription compliance. Management groups provide a management area over subscriptions. We organize subscriptions into Management Groups, the management conditions we apply are inherited by all related management groups and subscriptions. Each management group at all levels is assigned Policy Initiatives, it allows to organize a hierarchical structure of policies in the solution.
+The **Demo** solution leverages management groups for efficient access management, policies assignment, and subscription management. The management groups follow the layered approach with respective policy initiatives assignment on each level. The diagram below provides an overview:
 
-The diagram below provides an overview: 
+![**Demo**](/docs/.attachments/Demo_solution_MG.png)
 
-![**Demo**](./docs/.attachments/Demo_solution_MG.png)
+The **Demo** solution leverage five subscriptions to split and isolated different workload types:
 
-The **Demo** solution is divided into 5 environments. Subscriptions are used as an environment tool, which allows you to split the solution for accessing isolated loads. Each environment performs certain functions:
-- The **Gateway** is the entry-point of the whole solution that provides access to the solution from the Internet or on-premise networks and provides communication between the other environments.
-- **Shared** contains shared resources that need to be accessed for the functioning of the solution elements in the rest of the environment.
+- **Gateway** - Is the entry-point of the whole solution that provides access to the solution from the Internet or on-premise networks and provides communication between the other environments.
+- **Shared** - It contains shared resources that need to be accessed for the functioning of the solution elements in the rest of the environment.
 - **Identity** - designed for resources that store sensitive information and provide access control. This creates an opportunity to further protect our shared services like Domain Controllers, different authentication services, secure data management systems and etc..
-- **DMZ** environment is designed to place resources open for Internet access, which need to be separated from the internal network. DMZs function as a buffer zone between the public Internet and the rest of the environments.
-- **Business** environment is designed to deploy the resources that are used initially to achieve the goals and objectives of the business.
-
-The diagram below provides a high-level overview of the solution:
-
-![**Demo**](./docs/.attachments/Demo_solution_v1.1.png)
+- **DMZ** - the spoke is designed to place resources open for Internet access, which need to be separated from the internal network. DMZs function as a buffer zone between the public Internet and the rest of the environments.
+- **Business** - Is an environment that is designed to deploy the resources that are used initially to achieve the goals and objectives of the business.
 
 
 ## Azure Key Vault management
 
+The solution deploys three types of the Azure Key Vault:
 
-The solution deploys key stores for three types of purposes:
 - The prerequisite Key Vault - is one within the solution. Used to store sensitive data required for Terraform operation.
 - Infrastructure Key Vault - one for each environment, key/secret access based on access policies. It is used to store secret data used to create Azure resources, such as passwords for virtual machine user accounts.
 - Application Key Vault - one for each environment, key/secret access based on RBAC. It is used to store secret data used in the application, such as account passwords.
 
 For Infrastructure Key Vault and Application Key Vault diagnostic settings are enabled, collected logs and metrics are stored in Log Analytics workspaces for each environment (subscription) and duplicated in the storage account for each environment (subscription)
 
-![**Demo_solution_KV**](./docs/.attachments/Demo_solution_KV.png)
+![**Demo_solution_KV**](/docs/.attachments/Demo_solution_KV.png)
 
 
 ## Prerequisites
 
+To deploy a **Demo** solution within your landscape, you will need:
 
-Since **Demo** solution based on Azure Cloud environment and Azure DevOps service specifically - we need:
-- Azure Cloud subscription;
-- Azure Cloud Service Principal with "Management Group Contributor" and "Owner" (at least "Contributor" and "User Access Administrator" if "Owner" is not available) permissions at the Root Management Group level;
-- Installed on the local machine tools: git, Terraform, PowerShell(pwsh)
+- Azure Cloud subscription.
+- Azure Cloud Service Principal with "Management Group Contributor" and "Owner" (at least "Contributor" and "User Access Administrator" if "Owner" is not available) permissions at the Root Management Group level.
+- Installed on the local machine tools: 
+  - git
+  - Terraform
+  - PowerShell(pwsh)
 
 The solution is designed for deployment in five subscriptions. You can create 
-- a separate Azure Resource Manager service connection for each of them at Azure subscription level scope;
+- a separate Azure Resource Manager service connection for each of them at Azure subscription level scope.
 - or use a single one at scope of Management Group (with Azure subscriptions inside). 
 
 ## Manual deploy instruction using PowerShell syntax
@@ -228,8 +242,7 @@ terraform apply -var-file="../configuration/epam.shared.env.demo.tfvars" -auto-a
 
 
 # Documents
-- Some Terraform best practices you can find [here](./docs/Best-practices-for-using-Terraform.md)
-
+- Some Terraform best practices you can found [here](./docs/Best-practices-for-using-Terraform.md)
 
 # Contributing
 
