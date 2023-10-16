@@ -24,9 +24,9 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Environment:**
- - Cloud Provider: [e.g. AWS]
- - Version [e.g. 0.16.12345]
- - Browser: [e.g. chrome, safari]
+ - Cloud Provider: [e.g. Azure]
+ - Version [e.g. 3.56.0]
+ - Browser/Tools: [e.g. terraform, chrome, pwsh]
 
 **Additional context**
 Add any other context about the problem here.
