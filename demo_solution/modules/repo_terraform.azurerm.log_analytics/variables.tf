@@ -37,6 +37,15 @@ variable "retention_in_days" {
   default     = null
 }
 
+variable "daily_quota_gb" {
+  description = <<EOT
+  The workspace daily quota for ingestion in GB. Defaults to -1 (unlimited) if omitted.
+  The Free SKU has a default daily_quota_gb value of 0.5 (GB).
+  EOT
+  type        = number
+  default     = -1
+}
+
 variable "activity_log_subs" {
   description = <<EOT
   List of subscriptions ID for which you need to spice up the Activity log to this workspace, the user 

@@ -36,32 +36,14 @@ variable "routes" {
     name                   = string
     address_prefix         = string
     next_hop_type          = string
-    next_hop_in_ip_address = string
+    next_hop_in_ip_address = optional(string, null)
   }))
 }
 
 variable "subnet_associate" {
-  description = <<EOF
-    "A collection of subnets."
-    The subnet_associate settings:
-    `subnet_name` - the name of associate subnet
-    `vnet_name` - the vnet name of associate subnet
-    `rg_name` - the resource group name of associate subnet
-
-    Example:
-    ```
-    subnet_associate = [
-      {
-        subnet_name = "example-name"
-        vnet_name   = "example-vnet-name"
-        rg_name     = "example-rg-name"
-      }
-    EOF
+  description = "A collection of subnets id."
   type = list(object({
-    subnet_name = string
-    vnet_name   = string
-    rg_name     = string
-
+    subnet_id = string
   }))
 }
 

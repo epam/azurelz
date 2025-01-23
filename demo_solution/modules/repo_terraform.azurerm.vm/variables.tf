@@ -163,6 +163,13 @@ variable "nic_settings" {
   Possible values are `Static` or `Dynamic`.
   `vm_private_ip_address`: The VM private ip address. If `vm_private_ip_allocation_method` set
   as `Dynamic` - vm_private_ip_address not used.
+  `lb_backend_address_pool_association` - Parameters for NIC associatiion with Azure Load Balancer backend pool.
+                                          Mandatory if `add_to_lb_backend_pool` set to `true`
+      `lb_subscription_id` - The subscription ID where Azure Load Balancer exists                                    
+      `lb_name` - The name of the Azure Load Balancer where needed backend pool exists
+      `lb_rg_name` - The resource group name where Azure Load Balancer exists
+      `lb_backend_address_pool_name` - The name of the Load Balancer Backend Address Pool 
+                                     which this Network Interface should be connected to.
   
   `public_ip`: An object containing Public IP configuration:
        `vm_pip_allocation_method`: Defines the allocation method for this public IP address.
@@ -185,6 +192,12 @@ variable "nic_settings" {
     enable_accelerated_networking   = optional(bool, false)
     vm_private_ip_allocation_method = optional(string, "Dynamic")
     vm_private_ip_address           = optional(string)
+    lb_backend_address_pool_association = optional(object({
+      lb_subscription_id           = string
+      lb_name                      = string
+      lb_rg_name                   = string
+      lb_backend_address_pool_name = string
+    }), null)
     public_ip = optional(object({
       vm_pip_allocation_method = optional(string, "Static")
       sku                      = optional(string, "Basic")
@@ -337,4 +350,26 @@ variable "vm_insights" {
     workspace_key = string
   })
   default = null
+}
+
+variable "bypass_platform_safety_checks_on_user_schedule_enabled" {
+  description = "(Optional) Specifies whether to skip platform scheduled patching when a user schedule is associated with the VM"
+  type        = bool
+  default     = false
+}
+
+variable "patch_assessment_mode" {
+  description = " (Optional) Specifies the mode of VM Guest Patching for the Virtual Machine. Possible values are AutomaticByPlatform or ImageDefault"
+  type        = string
+  default     = "ImageDefault"
+}
+variable "patch_mode" {
+  description = <<EOF
+    (Optional) Specifies the mode of in-guest patching to this Windows Virtual Machine. Possible values are `Manual`, `AutomaticByOS` and
+    `AutomaticByPlatform`. Defaults to `AutomaticByOS. For more information on patch modes please see the product documentation.
+    If patch_mode is set to `AutomaticByPlatform` then `provision_vm_agent` must also be set to `true`. If the Virtual Machine is using a
+    hotpatching enabled image the `patch_mode` must always be set to `AutomaticByPlatform`.
+  EOF
+  type        = string
+  default     = "AutomaticByOS"
 }

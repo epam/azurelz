@@ -6,15 +6,9 @@ variable "resource_group_name" {
   EOF
 }
 
-variable "vnet_rg_name" {
+variable "subnet_id" {
   type        = string
-  description = "The name of VNET resource group. If not specified, the resource group name will be used."
-  default     = null
-}
-
-variable "vnet_name" {
-  type        = string
-  description = "The name of VNET"
+  description = "The ID of subnet for AzureBastion, must be exactly 'AzureBastionSubnet' to be used for the Azure Bastion Host resource"
 }
 
 variable "location" {

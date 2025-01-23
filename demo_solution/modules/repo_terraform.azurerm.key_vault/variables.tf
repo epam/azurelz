@@ -105,6 +105,12 @@ variable "soft_delete_retention_days" {
   default     = "90"
 }
 
+variable "public_network_access_enabled" {
+  type        = bool
+  description = "Allows public network access to the key vault."
+  default     = true
+}
+
 variable "diagnostic_setting" {
   description = <<EOF
   The description of parameters for Diagnostic Setting:

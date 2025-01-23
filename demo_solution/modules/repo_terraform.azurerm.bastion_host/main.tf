@@ -4,19 +4,6 @@ data "azurerm_resource_group" "bastion_rg" {
   name  = var.resource_group_name
 }
 
-# Get data from VNET
-data "azurerm_virtual_network" "vnet" {
-  name                = var.vnet_name
-  resource_group_name = var.vnet_rg_name != null ? var.vnet_rg_name : var.resource_group_name
-}
-
-# Get data from AzureBastionSubnet subnet
-data "azurerm_subnet" "bastion_subnet" {
-  name                 = "AzureBastionSubnet"
-  resource_group_name  = data.azurerm_virtual_network.vnet.resource_group_name
-  virtual_network_name = var.vnet_name
-}
-
 # Create the Bastion host
 resource "azurerm_bastion_host" "bastion" {
   name                   = var.bastion_host_name
@@ -33,7 +20,7 @@ resource "azurerm_bastion_host" "bastion" {
 
   ip_configuration {
     name                 = "${var.bastion_host_name}-ipcfg"
-    subnet_id            = data.azurerm_subnet.bastion_subnet.id
+    subnet_id            = var.subnet_id
     public_ip_address_id = var.public_ip_address_id
   }
 }

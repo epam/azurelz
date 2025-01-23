@@ -17,12 +17,9 @@ variable "resource_group_name" {
   type        = string
 }
 
-variable "public_ip_address" {
-  description = <<EOF
-  The map which contains the name and resource group of the public ip which will
-  be assigned to the firewall.
-  EOF
-  type        = map(string)
+variable "public_ip_address_id" {
+  description = "The Id of mapped public IP"
+  type        = string
 }
 
 variable "firewall_policy_name" {
@@ -52,18 +49,32 @@ variable "sku_name" {
   default     = "AZFW_VNet"
 }
 
-variable "subnet_associate" {
-  description = <<EOF
-  The map which contains the names of the vnet and the subnet and resource group name
-  where the firewall will be created.
-  EOF
-  type        = map(string)
+variable "subnet_id" {
+  type        = string
+  description = "The ID of subnet for AzureFirewall, must be exactly 'AzureFirewallSubnet' to be used for the Azure Bastion Host resource"
 }
 
 variable "zones" {
   description = "Specifies the availability zones in which the Azure Firewall should be created."
   type        = list(string)
   default     = null
+}
+
+variable "dns_servers" {
+  description = "A list of DNS servers that the Azure Firewall will direct DNS traffic to the for name resolution."
+  type        = list(string)
+  default     = null
+}
+
+variable "dns_proxy_enabled" {
+  description = <<EOF
+  Whether DNS proxy is enabled. It will forward DNS requests to the DNS servers when set to true.
+  It will be set to true if dns_servers provided with a not empty list.
+  DNS parameters (Network.DNS.Servers,Network.DNS.EnableProxy) under additional properties are not allowed for firewall
+  deployed in virtual hub or vnet firewall attached to a firewall policy. DNS configuration should be managed by policy.
+  EOF
+  type        = bool
+  default     = false
 }
 
 variable "management_ip_configuration" {

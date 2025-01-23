@@ -11,6 +11,7 @@ resource "azurerm_log_analytics_workspace" "this" {
   resource_group_name = var.rg_name
   sku                 = var.pricing_tier
   retention_in_days   = var.retention_in_days
+  daily_quota_gb      = var.daily_quota_gb
   tags                = var.tags
 }
 

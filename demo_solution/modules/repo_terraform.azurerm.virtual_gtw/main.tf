@@ -1,40 +1,18 @@
-# Get subnet to associate with Azure firewall
-data "azurerm_subnet" "subnet" {
-  name                 = lookup(var.ip_configuration, "subnet_name", "GatewaySubnet")
-  virtual_network_name = var.ip_configuration.vnet_name
-  resource_group_name  = lookup(var.ip_configuration, "vnet_rg_name", var.resource_group_name)
-}
-
-data "azurerm_subnet" "active_active_subnet" {
-  count = var.active_active == true ? 1 : 0
-
-  name                 = lookup(var.active_active_ip_configurations, "subnet_name", "GatewaySubnet")
-  virtual_network_name = var.active_active_ip_configurations.vnet_name
-  resource_group_name  = lookup(var.active_active_ip_configurations, "vnet_rg_name", var.resource_group_name)
-}
-
-# Get public IP data
-data "azurerm_public_ip" "public_ip" {
-  name                = lookup(var.ip_configuration, "public_ip_name")
-  resource_group_name = lookup(var.ip_configuration, "public_ip_rg_name")
-}
-
-data "azurerm_public_ip" "active_active_public_ip" {
-  count = var.active_active == true ? 1 : 0
-
-  name                = lookup(var.active_active_ip_configurations, "public_ip_name")
-  resource_group_name = lookup(var.active_active_ip_configurations, "public_ip_rg_name")
-}
-
 # Get resource group data
 data "azurerm_resource_group" "rg" {
-  name = var.resource_group_name
+  count = var.location == null ? 1 : 0
+  name  = var.resource_group_name
 }
 
 # Create Azure virtual network gateway
 resource "azurerm_virtual_network_gateway" "virtual_gateway" {
+  timeouts {
+    create = "60m"
+    delete = "60m"
+    update = "60m"
+  }
   name                = var.name
-  location            = var.location == null ? data.azurerm_resource_group.rg.location : var.location
+  location            = var.location == null ? data.azurerm_resource_group.rg[0].location : var.location
   resource_group_name = var.resource_group_name
   type                = var.type
   vpn_type            = var.vpn_type
@@ -44,20 +22,14 @@ resource "azurerm_virtual_network_gateway" "virtual_gateway" {
   generation          = var.generation
   tags                = var.tags
 
-  ip_configuration {
-    name                          = lookup(var.ip_configuration, "name", "default-config")
-    public_ip_address_id          = data.azurerm_public_ip.public_ip.id
-    private_ip_address_allocation = lookup(var.ip_configuration, "private_ip_address_allocation", "Dynamic")
-    subnet_id                     = data.azurerm_subnet.subnet.id
-  }
-
   dynamic "ip_configuration" {
-    for_each = var.active_active == true ? [1] : []
+    for_each = toset(var.ip_configuration)
+    iterator = ip_cfg
     content {
-      name                          = lookup(var.active_active_ip_configurations, "name", "active-active-config")
-      public_ip_address_id          = data.azurerm_public_ip.active_active_public_ip[0].id
-      private_ip_address_allocation = lookup(var.active_active_ip_configurations, "private_ip_address_allocation", "Dynamic")
-      subnet_id                     = data.azurerm_subnet.active_active_subnet[0].id
+      name                          = ip_cfg.value.name
+      public_ip_address_id          = ip_cfg.value.public_ip_address_id
+      private_ip_address_allocation = ip_cfg.value.private_ip_address_allocation
+      subnet_id                     = ip_cfg.value.subnet_id
     }
   }
 }
@@ -65,7 +37,7 @@ resource "azurerm_virtual_network_gateway" "virtual_gateway" {
 resource "azurerm_virtual_network_gateway_connection" "connection" {
   count               = var.connection != null ? 1 : 0
   name                = lookup(var.connection, "name", "Null")
-  location            = var.location == null ? data.azurerm_resource_group.rg.location : var.location
+  location            = var.location == null ? data.azurerm_resource_group.rg[0].location : var.location
   resource_group_name = var.resource_group_name
 
   virtual_network_gateway_id = azurerm_virtual_network_gateway.virtual_gateway.id

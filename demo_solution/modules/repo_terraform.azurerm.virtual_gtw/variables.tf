@@ -66,31 +66,30 @@ variable "generation" {
   default     = "None"
 }
 
+# One or more (up to 3) ip_configuration blocks documented below.
+# An active-standby gateway requires exactly one ip_configuration block,
+# an active-active gateway requires exactly two ip_configuration blocks,
+# an active-active zone redundant gateway with P2S configuration requires exactly three ip_configuration blocks.
 variable "ip_configuration" {
   description = <<EOF
-  A configuration map which contains vnet and ip data for assining public ip:
-  `subnet_name` - the subnet name of the gateway subnet of a virtual network in
-  which the virtual network gateway will be created.
-  `vnet_name` - the VNET name in which the virtual network gateway will be created.
-  It is mandatory that the associated subnet is named GatewaySubnet. Therefore,
-  each virtual network can contain at most a single Virtual Network Gateway.
-  `vnet_rg_name` - the VNET resource group in which the virtual network gateway will be created.
-  It is mandatory that the associated subnet is named GatewaySubnet. Therefore,
-  each virtual network can contain at most a single Virtual Network Gateway.
-  `public_ip_name` - the public IP address name to associate with the Virtual Network Gateway
-  `public_ip_rg_name` - the public IP address resource group to associate with the Virtual Network Gateway.
+  A configuration list of object which contains vnet and ip data for assining public ip:
+  `name` - (Optional) A user-defined name of the IP configuration. Defaults to vnetGatewayConfig.
+  `private_ip_address_allocation` - (Optional) Defines how the private IP address of the gateways virtual interface is assigned.
+    The only valid value is Dynamic for Virtual Network Gateway (Static is not supported by the service yet). Defaults to Dynamic.
+  `subnet_id` - (Required) The ID of the gateway subnet of a virtual network in which the virtual network gateway will be created.
+    It is mandatory that the associated subnet is named GatewaySubnet. Therefore, each virtual network can contain at most a single Virtual Network Gateway.
+  `public_ip_address_id` - (Required) The ID of the public IP address to associate with the Virtual Network Gateway.
   EOF
-  type        = map(string)
-}
-
-variable "active_active_ip_configurations" {
-  description = <<EOF
-  An active-active gateway requires exactly two ip_configuration blocks whereas
-  an active-active zone redundant gateway with P2S configuration requires exactly
-  three ip_configuration blocks.
-  EOF
-  type        = map(string)
-  default     = {}
+  type = list(object({
+    name                          = optional(string, "vnetGatewayConfig")
+    private_ip_address_allocation = optional(string, "Dynamic")
+    subnet_id                     = string
+    public_ip_address_id          = string
+  }))
+  validation {
+    condition     = length(var.ip_configuration) >= 1 && length(var.ip_configuration) <= 3
+    error_message = "At least one (up to 3) ip_configuration block must be provided"
+  }
 }
 
 variable "connection" {
