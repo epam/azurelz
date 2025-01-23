@@ -52,14 +52,14 @@ During deployment, passwords for virtual machines are transmitted by secrets loc
 
 The diagram below provides a high-level overview of the solution:
 
-![**Demo**](/docs/.attachments/Demo_solution_v1.1.png)
+![**Demo**](docs/.attachments/Solution-Management/Demo/Demo_solution_v1.1.png)
 
 ## Organizational structure
 
 
 The **Demo** solution leverages management groups for efficient access management, policies assignment, and subscription management. The management groups follow the layered approach with respective policy initiatives assignment on each level. The diagram below provides an overview:
 
-![**Demo**](/docs/.attachments/Demo_solution_MG.png)
+![**Demo**](docs/.attachments/Solution-Management/Demo/Demo_solution_MG.png)
 
 The **Demo** solution leverage five subscriptions to split and isolated different workload types:
 
@@ -80,8 +80,7 @@ The solution deploys three types of the Azure Key Vault:
 
 For Infrastructure Key Vault and Application Key Vault diagnostic settings are enabled, collected logs and metrics are stored in Log Analytics workspaces for each environment (subscription) and duplicated in the storage account for each environment (subscription)
 
-![**Demo_solution_KV**](/docs/.attachments/Demo_solution_KV.png)
-
+![**Demo_solution_KV**](docs/.attachments/Solution-Management/Demo/Demo_solution_KV.png)
 
 ## Prerequisites
 
@@ -125,54 +124,113 @@ $sp_object_id = 'SERVICE_PRINCIPAL_OBJECT_ID'
 ```
 3. replace tokens `#{ENV_AZURE_SUBSCRIPTION_ID}#` and `#{ENV_AZURE_SP_OBJECT_ID}#` in each config files:
 ```pwsh
+### BASE_LAYER
 # business
-(Get-Content .\demo_solution\configuration\epam.business.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\base_layer\epam.business.env.demo.tfvars).replace(
 '#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_business) |
-Set-Content  .\demo_solution\configuration\epam.business.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\base_layer\epam.business.env.demo.tfvars
 
-(Get-Content .\demo_solution\configuration\epam.business.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\base_layer\epam.business.env.demo.tfvars).replace(
 '#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
-Set-Content  .\demo_solution\configuration\epam.business.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\base_layer\epam.business.env.demo.tfvars
 
 # dmz
-(Get-Content .\demo_solution\configuration\epam.dmz.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\base_layer\epam.dmz.env.demo.tfvars).replace(
 '#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_dmz) |
-Set-Content  .\demo_solution\configuration\epam.dmz.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\base_layer\epam.dmz.env.demo.tfvars
 
-(Get-Content .\demo_solution\configuration\epam.dmz.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\base_layer\epam.dmz.env.demo.tfvars).replace(
 '#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
-Set-Content  .\demo_solution\configuration\epam.dmz.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\base_layer\epam.dmz.env.demo.tfvars
 
 # gateway
-(Get-Content .\demo_solution\configuration\epam.gateway.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\base_layer\epam.gateway.env.demo.tfvars).replace(
 '#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_gateway) |
-Set-Content  .\demo_solution\configuration\epam.gateway.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\base_layer\epam.gateway.env.demo.tfvars
 
-(Get-Content .\demo_solution\configuration\epam.gateway.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\base_layer\epam.gateway.env.demo.tfvars).replace(
 '#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
-Set-Content  .\demo_solution\configuration\epam.gateway.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\base_layer\epam.gateway.env.demo.tfvars
 
 # identity
-(Get-Content .\demo_solution\configuration\epam.identity.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\base_layer\epam.identity.env.demo.tfvars).replace(
 '#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_identity) |
-Set-Content  .\demo_solution\configuration\epam.identity.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\base_layer\epam.identity.env.demo.tfvars
 
-(Get-Content .\demo_solution\configuration\epam.identity.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\base_layer\epam.identity.env.demo.tfvars).replace(
 '#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
-Set-Content  .\demo_solution\configuration\epam.identity.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\base_layer\epam.identity.env.demo.tfvars
 
 # shared
-(Get-Content .\demo_solution\configuration\epam.shared.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\base_layer\epam.shared.env.demo.tfvars).replace(
 '#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_shared) |
-Set-Content  .\demo_solution\configuration\epam.shared.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\base_layer\epam.shared.env.demo.tfvars
 
-(Get-Content .\demo_solution\configuration\epam.shared.env.demo.tfvars).replace(
+(Get-Content .\demo_solution\configuration\base_layer\epam.shared.env.demo.tfvars).replace(
 '#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
-Set-Content  .\demo_solution\configuration\epam.shared.env.demo.tfvars
+Set-Content  .\demo_solution\configuration\base_layer\epam.shared.env.demo.tfvars
+
+
+
+### WORK_LAYER
+
+# business
+(Get-Content .\demo_solution\configuration\work_layer\epam.business.env.demo.tfvars).replace(
+'#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_business) |
+Set-Content  .\demo_solution\configuration\work_layer\epam.business.env.demo.tfvars
+
+(Get-Content .\demo_solution\configuration\work_layer\epam.business.env.demo.tfvars).replace(
+'#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
+Set-Content  .\demo_solution\configuration\work_layer\epam.business.env.demo.tfvars
+
+# dmz
+(Get-Content .\demo_solution\configuration\work_layer\epam.dmz.env.demo.tfvars).replace(
+'#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_dmz) |
+Set-Content  .\demo_solution\configuration\work_layer\epam.dmz.env.demo.tfvars
+
+(Get-Content .\demo_solution\configuration\work_layer\epam.dmz.env.demo.tfvars).replace(
+'#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
+Set-Content  .\demo_solution\configuration\work_layer\epam.dmz.env.demo.tfvars
+
+# gateway
+(Get-Content .\demo_solution\configuration\work_layer\epam.gateway.env.demo.tfvars).replace(
+'#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_gateway) |
+Set-Content  .\demo_solution\configuration\work_layer\epam.gateway.env.demo.tfvars
+
+(Get-Content .\demo_solution\configuration\work_layer\epam.gateway.env.demo.tfvars).replace(
+'#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
+Set-Content  .\demo_solution\configuration\work_layer\epam.gateway.env.demo.tfvars
+
+# identity
+(Get-Content .\demo_solution\configuration\work_layer\epam.identity.env.demo.tfvars).replace(
+'#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_identity) |
+Set-Content  .\demo_solution\configuration\work_layer\epam.identity.env.demo.tfvars
+
+(Get-Content .\demo_solution\configuration\work_layer\epam.identity.env.demo.tfvars).replace(
+'#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
+Set-Content  .\demo_solution\configuration\work_layer\epam.identity.env.demo.tfvars
+
+# shared
+(Get-Content .\demo_solution\configuration\work_layer\epam.shared.env.demo.tfvars).replace(
+'#{ENV_AZURE_SUBSCRIPTION_ID}#', $sub_shared) |
+Set-Content  .\demo_solution\configuration\work_layer\epam.shared.env.demo.tfvars
+
+(Get-Content .\demo_solution\configuration\work_layer\epam.shared.env.demo.tfvars).replace(
+'#{ENV_AZURE_SP_OBJECT_ID}#', $sp_object_id) |
+Set-Content  .\demo_solution\configuration\work_layer\epam.shared.env.demo.tfvars
+
 
 ```
 
-4. Deploy Base Layer to all environments
+4. replace token `#{ENV_AZURE_TENANT_ID}#` in     "demo_solution/configuration/base_layer/epam.identity.env.demo.tfvars" file.
+
+```pwsh
+(Get-Content .\demo_solution\configuration\base_layer\epam.identity.env.demo.tfvars).replace(
+'#{ENV_AZURE_TENANT_ID}#', $env:ARM_TENANT_ID ) |
+Set-Content  .\demo_solution\configuration\base_layer\epam.identity.env.demo.tfvars
+```
+
+5. Deploy Base Layer to all environments
 ```pwsh
 cd .\demo_solution\base_layer\
 terraform init
@@ -185,27 +243,27 @@ terraform workspace new epam.shared.env.demo
 
 $env:ARM_SUBSCRIPTION_ID = $sub_business
 terraform workspace select epam.business.env.demo
-terraform apply -var-file="../configuration/epam.business.env.demo.tfvars" -auto-approve
+terraform apply -var-file="../configuration/base_layer/epam.business.env.demo.tfvars" -auto-approve
 
 $env:ARM_SUBSCRIPTION_ID = $sub_dmz
 terraform workspace select epam.dmz.env.demo
-terraform apply -var-file="../configuration/epam.dmz.env.demo.tfvars" -auto-approve
+terraform apply -var-file="../configuration/base_layer/epam.dmz.env.demo.tfvars" -auto-approve
 
 $env:ARM_SUBSCRIPTION_ID = $sub_gateway
 terraform workspace select epam.gateway.env.demo
-terraform apply -var-file="../configuration/epam.gateway.env.demo.tfvars" -auto-approve
+terraform apply -var-file="../configuration/base_layer/epam.gateway.env.demo.tfvars" -auto-approve
 
 $env:ARM_SUBSCRIPTION_ID = $sub_identity
 terraform workspace select epam.identity.env.demo
-terraform apply -var-file="../configuration/epam.identity.env.demo.tfvars" -auto-approve
+terraform apply -var-file="../configuration/base_layer/epam.identity.env.demo.tfvars" -auto-approve
 
 $env:ARM_SUBSCRIPTION_ID = $sub_shared
 terraform workspace select epam.shared.env.demo
-terraform apply -var-file="../configuration/epam.shared.env.demo.tfvars" -auto-approve
+terraform apply -var-file="../configuration/base_layer/epam.shared.env.demo.tfvars" -auto-approve
 
 ```
 
-5. Deploy Work Layer to all environments
+6. Deploy Work Layer to all environments
 ```pwsh
 cd ..\work_layer
 terraform init
@@ -218,23 +276,23 @@ terraform workspace new epam.shared.env.demo
 
 $env:ARM_SUBSCRIPTION_ID = $sub_business
 terraform workspace select epam.business.env.demo
-terraform apply -var-file="../configuration/epam.business.env.demo.tfvars" -auto-approve
+terraform apply -var-file="../configuration/work_layer/epam.business.env.demo.tfvars" -auto-approve
 
 $env:ARM_SUBSCRIPTION_ID = $sub_dmz
 terraform workspace select epam.dmz.env.demo
-terraform apply -var-file="../configuration/epam.dmz.env.demo.tfvars" -auto-approve
+terraform apply -var-file="../configuration/work_layer/epam.dmz.env.demo.tfvars" -auto-approve
 
 $env:ARM_SUBSCRIPTION_ID = $sub_gateway
 terraform workspace select epam.gateway.env.demo
-terraform apply -var-file="../configuration/epam.gateway.env.demo.tfvars" -auto-approve
+terraform apply -var-file="../configuration/work_layer/epam.gateway.env.demo.tfvars" -auto-approve
 
 $env:ARM_SUBSCRIPTION_ID = $sub_identity
 terraform workspace select epam.identity.env.demo
-terraform apply -var-file="../configuration/epam.identity.env.demo.tfvars" -auto-approve
+terraform apply -var-file="../configuration/work_layer/epam.identity.env.demo.tfvars" -auto-approve
 
 $env:ARM_SUBSCRIPTION_ID = $sub_shared
 terraform workspace select epam.shared.env.demo
-terraform apply -var-file="../configuration/epam.shared.env.demo.tfvars" -auto-approve
+terraform apply -var-file="../configuration/work_layer/epam.shared.env.demo.tfvars" -auto-approve
 
 ```
 
@@ -250,5 +308,5 @@ Please check out our [contributing guidelines](CONTRIBUTING.md).
 
 # License
 
-Copyright (C) 2023 EPAM Systems Inc.
+Copyright (C) 2025 EPAM Systems Inc.
 The LICENSE file in the root of this project applies unless otherwise indicated. 

@@ -39,7 +39,7 @@ resource "azurerm_network_interface" "internal_nic" {...}
 resource "azurerm_network_interface" "external_nic" {...}
 ```
 
-For variable naming, it is recommended to use standard Terraform resource variable names instead of creating custom names.
+For variable naming, it is recommended to use standard Terraform resource (see [Terraform resource documentation](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources)) variable names instead of creating custom names.
 
 Example:<br>
 Not recommended:
@@ -98,6 +98,7 @@ terraform {
 A Terraform module can consist of multiple Terraform templates, static files, and documentation files. The recommended file structure is shown below (not all components may be used):
 ```
 -- Module/
+   -- docs/
    -- examples/
    -- files/
    -- helpers/
@@ -110,26 +111,27 @@ A Terraform module can consist of multiple Terraform templates, static files, an
    -- README.md
    -- ...other…
 ```
+- docs/ - folder contains modules' documentation files.
 - examples/ - folder contains example configuration files, with comments inside.
-- files/ - folder contains static files. By the phrase "static files" we assume files that Terraform references but doesn't execute (such as startup scripts for the VMs). This files must be part of Terraform module functionality, otherwise it must be part of Terraform configuration files, that stores in separate directory.
+- files/ - folder contains static files. By the phrase "static files" we assume files that Terraform references but doesn't execute (such as startup scripts for the VMs). These files must be part of Terraform module functionality, otherwise, they must be part of Terraform configuration files, that are stored in a separate directory.
 - helpers/ - folder used to store helper scripts that aren't called by Terraform. 
 - templates/ - folder stores .tftpl files that read in by using the Terraform templatefile function
-main.tf file mainly contains the AKS cluster itself and directly connected resources, such as identities that must be in conjunction with AKS.
+- main.tf file mainly contains the AKS cluster itself and directly connected resources, such as identities that must be in conjunction with AKS.
 - variables.tf - all Terraform module variables are declared here.
-- local.tf – usually used to create “dynamic” variables without exposing it as a variable for reusing it in multiple places. But when the number of local variables is too low you may inset local blocks right in the Terraform resource file that is use these variables. At the same time, there are such cases when you need to use multiple local files to split big number of local variables logically.
+- local.tf – usually used to create “dynamic” variables without exposing them as a variable for reusing it in multiple places. But when the number of local variables is too low you may inset local blocks right in the Terraform resource file that uses these variables. At the same time, there are such cases when you need to use multiple local files to split a big number of local variables logically.
 - versions.tf - declares Terraform module provider and Terraform versions that must be used.
 - outputs.tf - all Terraform module output data is declared here. It could be used by other Terraform modules.
 - README.md - file includes basic documentation about the module.
-- Other Terraform files are used for logical grouping of resources. For example, key_vault.tf could contain Azure Key Vault resource and related role assignments, certificates, and secrets provisioning resources.
+- Other Terraform files are used for logical grouping of resources. For example, key_vault.tf could contain Azure Key Vault resources and related role assignments, certificates, and secrets provisioning resources.
 
-At the same time child modules has specific requirements to the modules structure, for this please refer to the pages [here](/IaC-Governance/Terraform-code-development).
+At the same time child modules have specific requirements for the structure of the module, for this please refer to the pages [here](/IaC-Framework/Terraform-code-development).
 
 
 ## Code quality
 
 
 To ensure that your code is well-understood, secure, and adheres to current best practices and standards, it is recommended to implement a code review process. This process may include:
-- Static code analysis using utilities like TFLint and TFSec.
+- Static code analysis using utilities like TFLint, TFSec, Checkov.
 - Use terraform fmt to format your code for better readability.
 - Dynamic code validation before the terraform apply stage using terraform validate and terraform plan.
 - Unit tests to check additional code requirements and improve code quality.
@@ -242,13 +244,46 @@ In this example, the `lock` module will be applied right after the `rg` module, 
 
 
 Securing sensitive data in Terraform is crucial for maintaining the integrity and confidentiality of your infrastructure.
+
 Never commit secrets to source control! Always prioritize using secrets management solutions for storing sensitive data.
 
 Use the `sensitive` Terraform function for sensitive data used by Terraform modules. Use `sensitive_content = sensitive(var.my_var)` in case the variable is used in a Terraform loop like `for_each`; if not, use `sensitive = true` for the specific variable in the variables declaration file.
 
 
+### Iteration over sensitive data
+
+
+Sensitive values, or values derived from sensitive values, cannot be used by Terraform as for_each arguments. The nonsensitive function can be used to explicitly tell Terraform that a given expression should not be treated as sensitive. 
+
+```
+variable "test" {
+  sensitive = true
+  type = string
+}
+
+resource "resource_test" "this" {
+  for_each = nonsensitive(var.test)
+}
+```
+
+Another option is to separate the values that will make up the keys from the values that contain sensitive information. Terraform can parse expressions using functions to determine if they contain sensitive values. Therefore, the `keys` function can be used to facilitate this separation.
+
+```
+variable "test_map" {
+  sensitive = true
+  type = map(number)
+}
+
+resource "resource_test" "this" {
+  for_each = var.test_map
+  length   = each.value
+}
+```
+
+
 ### Implement error handling and validation
- 
+
+
 Implement error handling and validation using try, for_each, and custom validation functions to ensure your code is robust and resilient.
 
 Example 
@@ -257,7 +292,7 @@ sku                       = try(var.apgtw_pip.sku, "Standard")
 gateway_ip_configurations = try(var.apgtw.gateway_ip_configurations, "Could not detect var.apgtw.gateway_ip_configurations")
 ```
 
-In this example, the standard error handling approach is used for the `sku` parameter. If `var.apgtw_pip.sku` does not exist, the "Standard" value will be applied to the configuration. However, for the `gateway_ip_configurations` parameter, another approach is used. This approach allows us to find issues faster by leaving a well-understandable comment in the place where a value must exist, but is not provided.
+In this example, the standard error handling approach is used for the `sku` parameter. If `var.apgtw_pip.sku` does not exist, the "Standard" value will be applied to the configuration. However, for the `gateway_ip_configurations` parameter, another approach is used. This approach allows us to find issues faster by leaving a well-understandable comment in the place where a value must exist but is not provided.
 
 You can also specify custom validation rules for a particular variable.
 
@@ -306,7 +341,7 @@ Follow these best practices for Terraform variables:
 - Use typization for variables and specify default values.
 - Minimize the number of required variables to decrease the configuration file size.
 - Avoid hardcoding values in variables.
-- Variables in the variables.tf file that are used for dedicated child module resource, used for specific, standalone function must be grouped in JSON/YAML object-oriented way. Like in an example below, variable named `public_ip` contains variables that are used only for VM public IP address configuration:
+- Variables in the variables.tf files that are used for dedicated child module resources, used for specific, standalone functions must be grouped in JSON/YAML object-oriented way. Like in the example below, a variable named `public_ip` contains variables that are used only for VM public IP address configuration:
 
 Example:
 ```
@@ -333,19 +368,19 @@ Do not hardcode values that could be changed anywhere in Terraform code, instead
 ### Comments
 
 
-It is recommended to leave comments in the code to make it easier to understand, especially for complex cases. Terraform supports comments syntax, and we recommend using one pattern for all comments. The default comment pattern as # begins a single-line, followed by one space and the comment itself.
+It is recommended to leave comments in the code to make it easier to understand, especially for complex cases. Terraform supports comments syntax, and we recommend using one pattern for all comments. The default comment pattern as # begins a single line, followed by one space and the comment itself.
 
 
-### Update protection
+### Update Protection
 
 
-Protect resources from accidental deletion or updates that must not be deleted or updated. This is usually necessary for databases, Key Vaults, shared Landing Zone platform resources, and more.
+Protect resources from accidental deletion or updates that must not be deleted or updated. This is usually necessary for databases, Key Vaults shared Landing Zone platform resources, and more.
 
 Example:
 ```
 resource "azurerm_key_vault_secret" "db_very_important_secret" {
   name         = "dbadmin"
-  value        = “”
+  value        = ""
   key_vault_id = azurerm_key_vault.test.id
   lifecycle {
     ignore_changes = [value]
@@ -354,7 +389,7 @@ resource "azurerm_key_vault_secret" "db_very_important_secret" {
 
 resource "azurerm_key_vault_secret" "db_very_important_secret" {
   name         = "dbadmin"
-  value        = “”
+  value        = ""
   key_vault_id = azurerm_key_vault.test.id
   lifecycle {
     prevent_destroy = true
@@ -404,11 +439,12 @@ resource "azurerm_public_ip" "vm" {
   name                = format("%s-%s-PIP", var.vm_name, each.key)
   location            = var.vm_location == null ? data.azurerm_resource_group.vm_rg[0].location : var.vm_location
   resource_group_name = var.vm_rg_name
+}
    …
 ```
 
 
-#### Bypassing consistent types error
+#### Bypassing consistent types of error
 
 
 Terraform looks for consistent types on both sides of a True and False conditional expression.
@@ -457,6 +493,12 @@ It is recommended to export all available information from the child modules tha
 
 
 Module variables must be specified in the variables.tf file. The root module variables specification must support all child module variables used by the root module. This ensures that users of your root module can provide the necessary inputs for all child modules, allowing for proper configuration and customization.
+
+
+## Module naming
+
+
+It is recommended to use a descriptive name for the child Terraform module that includes the initial resource name used as the base resource for this specific module. In cases where multiple resources are utilized in the module, use the "main" or, in other words, the parent resource in the module, which always exists, while other resources simply link to it or/and add additional functionality. For example, a child module that is based on the `azurerm_key_vault` resource and includes `azurerm_monitor_diagnostic_setting` for it could be named `azurerm_key_vault` or `key_vault`.
 
 
 ## Module outputs

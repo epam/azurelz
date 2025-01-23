@@ -44,7 +44,7 @@ variable "ip_version" {
 variable "domain_name_label" {
   description = <<EOF
     Label for the Domain Name. Will be used to make up the FQDN. If a domain name label is specified, an A DNS record is created for the public
-    IP in the Microsoft Azure DNS system."
+    IP in the Microsoft Azure DNS system.
   EOF
   type        = string
   default     = null
@@ -59,7 +59,7 @@ variable "idle_timeout_in_minutes" {
 variable "reverse_fqdn" {
   description = <<EOF
     A fully qualified domain name that resolves to this public IP address. If the reverseFqdn is specified, then a PTR DNS record is
-    created pointing from the IP address in the in-addr.arpa domain to the reverse FQDN."
+    created pointing from the IP address in the in-addr.arpa domain to the reverse FQDN.
   EOF
   type        = string
   default     = null
@@ -98,4 +98,20 @@ variable "tags" {
   description = "A mapping of tags to assign to the resource."
   type        = map(string)
   default     = {}
+}
+
+variable "ddos_protection_mode" {
+  description = <<EOF
+    The DDoS protection mode of the public IP. Possible values are Disabled, Enabled, and VirtualNetworkInherited. Defaults to VirtualNetworkInherited.
+  EOF
+  type        = string
+  default     = "VirtualNetworkInherited"
+}
+
+variable "ddos_protection_plan_id" {
+  description = <<EOF
+    The ID of DDoS protection plan associated with the public IP. Can only be set when ddos_protection_mode is Enabled
+  EOF
+  type        = string
+  default     = null
 }

@@ -96,7 +96,7 @@ resource "azurerm_automation_module" "module" {
   automation_account_name = azurerm_automation_account.account.name
 
   module_link {
-    uri = each.value.uri
+    uri = each.value.module_link
   }
 }
 

@@ -29,14 +29,39 @@ variable "inbound_rules" {
     "AzureLoadBalancer" and "Internet" can also be used;
   `destination_address_prefixes` - (Optional) list of destination address prefixes. Tags may not be used;
   `destination_asg` - (Optional) the list of map of destination ASG data:
-  "name" - the name of destination ASG;
-  "rg_name" - the name of Resource Groupe of destination ASG.
+    'name' - the name of destination ASG;
+    'rg_name' - the name of Resource Groupe of destination ASG.
   `source_asg` - the list of map of source ASG data:
-  "name" - the name of source ASG;
-  "rg_name" - the name of Resource Groupe of source ASG.
+    'name' - the name of source ASG;
+    'rg_name' - the name of Resource Groupe of source ASG.
   EOF
-  type        = any
-  default     = []
+  type = list(object({
+    name                         = string
+    priority                     = string
+    protocol                     = string
+    direction                    = string
+    access                       = string
+    description                  = optional(string)
+    source_port_range            = optional(string)
+    source_port_ranges           = optional(list(string))
+    destination_port_range       = optional(string)
+    destination_port_ranges      = optional(list(string))
+    source_address_prefix        = optional(string)
+    source_address_prefixes      = optional(list(string))
+    destination_address_prefix   = optional(string)
+    destination_address_prefixes = optional(list(string))
+    destination_asg = optional(list(object({
+      name    = string
+      rg_name = string
+    })), [])
+    source_asg = optional(list(object({
+      name    = string
+      rg_name = string
+    })), [])
+    source_application_security_group_ids      = optional(list(string))
+    destination_application_security_group_ids = optional(list(string))
+  }))
+  default = []
 }
 
 variable "outbound_rules" {
@@ -60,14 +85,39 @@ variable "outbound_rules" {
     "AzureLoadBalancer" and "Internet" can also be used;
   `destination_address_prefixes` - (Optional) list of destination address prefixes. Tags may not be used;
   `destination_asg` - (Optional) the list of map of destination ASG data:
-  "name" - the name of destination ASG;
-  "rg_name" - the name of Resource Groupe of destination ASG.
+    'name' - the name of destination ASG;
+    'rg_name' - the name of Resource Groupe of destination ASG.
   `source_asg` - the list of map of source ASG data:
-  "name" - the name of source ASG;
-  "rg_name" - the name of Resource Groupe of source ASG.
+    'name' - the name of source ASG;
+    'rg_name' - the name of Resource Groupe of source ASG.
   EOF
-  type        = any
-  default     = []
+  type = list(object({
+    name                         = string
+    priority                     = string
+    protocol                     = string
+    direction                    = string
+    access                       = string
+    description                  = optional(string)
+    source_port_range            = optional(string)
+    source_port_ranges           = optional(list(string))
+    destination_port_range       = optional(string)
+    destination_port_ranges      = optional(list(string))
+    source_address_prefix        = optional(string)
+    source_address_prefixes      = optional(list(string))
+    destination_address_prefix   = optional(string)
+    destination_address_prefixes = optional(list(string))
+    destination_asg = optional(list(object({
+      name    = string
+      rg_name = string
+    })), [])
+    source_asg = optional(list(object({
+      name    = string
+      rg_name = string
+    })), [])
+    source_application_security_group_ids      = optional(list(string))
+    destination_application_security_group_ids = optional(list(string))
+  }))
+  default = []
 }
 
 variable "location" {
@@ -82,12 +132,12 @@ variable "location" {
 variable "subnet_associate" {
   description = <<EOF
    A list of maps collection of associated subnets:
-   `subnet_name` - the name of Subnet;
-   `vnet_name` - the name of VNET;
-   `rg_name` - the name of subnets Resouce Group.
+   'subnet_id` - the id of Subnet
   EOF
-  type        = list(any)
-  default     = []
+  type = list(object({
+    subnet_id = string
+  }))
+  default = []
 }
 
 variable "diagnostic_setting" {
@@ -121,4 +171,4 @@ variable "tags" {
   description = "A mapping of tags to assign to the resource."
   type        = map(string)
   default     = {}
-} 
+}

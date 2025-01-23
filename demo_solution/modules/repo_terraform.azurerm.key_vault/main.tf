@@ -47,6 +47,7 @@ resource "azurerm_key_vault" "main" {
   enable_rbac_authorization       = var.enable_rbac_authorization
   purge_protection_enabled        = var.purge_protection_enabled
   soft_delete_retention_days      = var.soft_delete_retention_days
+  public_network_access_enabled   = var.public_network_access_enabled
 
   # Creating access policies to key vault resources for each user, group, application
   dynamic "access_policy" {

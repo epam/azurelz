@@ -30,26 +30,15 @@ locals {
     for rule in var.outbound_rules :
     lookup(rule, "source_asg", [])
   ]
-
   asg_list = flatten(setunion(flatten(local.inbound_destination_asg_list), flatten(local.outbound_destination_asg_list), flatten(local.inbound_source_asg_list), flatten(local.outbound_source_asg_list)))
-
-  subnet_associate = var.subnet_associate == null ? [] : var.subnet_associate
-}
-
-# Get subnet to associate with NSG
-data "azurerm_subnet" "subnet_associate" {
-  for_each             = { for subnet in local.subnet_associate : subnet.subnet_name => subnet }
-  name                 = each.value.subnet_name
-  virtual_network_name = each.value.vnet_name
-  resource_group_name  = lookup(each.value, "rg_name", var.resource_group_name)
 }
 
 # Associate subnet with NSG.
 # NSG will be associated with subnet only after all rules are created, it significant for subnets such as AzureBastion or ApplicationGatewaySubnet.
 resource "azurerm_subnet_network_security_group_association" "subnet" {
-  for_each                  = { for subnet in local.subnet_associate : subnet.subnet_name => subnet }
   depends_on                = [azurerm_network_security_rule.inbound_rules, azurerm_network_security_rule.outbound_rules]
-  subnet_id                 = data.azurerm_subnet.subnet_associate[each.value.subnet_name].id
+  for_each                  = { for idx, subnet in var.subnet_associate : idx => subnet }
+  subnet_id                 = each.value.subnet_id
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
 

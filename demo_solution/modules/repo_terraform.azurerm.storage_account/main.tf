@@ -31,7 +31,18 @@ resource "azurerm_storage_account" "storage" {
   infrastructure_encryption_enabled = var.infrastructure_encryption_enabled
   tags                              = var.tags
 
-
+  queue_properties {
+    dynamic "logging" {
+      for_each = var.logging != null ? [var.logging] : []
+      content {
+        delete                = var.logging.delete
+        write                 = var.logging.write
+        read                  = var.logging.read
+        version               = var.logging.version
+        retention_policy_days = var.logging.retention_policy_days
+      }
+    }
+  }
   blob_properties {
     delete_retention_policy {
       days = var.blob_delete_retention_day
@@ -45,9 +56,25 @@ resource "azurerm_storage_account" "storage" {
   # Creating network access control rules for storage account
   network_rules {
     bypass                     = [try(var.network_rules.bypass, "AzureServices")]
-    default_action             = try(var.network_rules.default_action, "Allow")
+    default_action             = try(var.network_rules.default_action, "Deny")
     ip_rules                   = try(var.network_rules.ip_rules, [])
     virtual_network_subnet_ids = concat(flatten(data.azurerm_subnet.storage[*].id), try(var.network_rules.external_subnet_ids, []))
+  }
+
+  dynamic "identity" {
+    for_each = var.identity != null ? [var.identity] : []
+    content {
+      type         = var.identity.type
+      identity_ids = var.identity.identity_ids
+    }
+  }
+
+  dynamic "sas_policy" {
+    for_each = var.sas_policy != null ? [var.sas_policy] : []
+    content {
+      expiration_period = var.sas_policy.expiration_period
+      expiration_action = var.sas_policy.expiration_action
+    }
   }
 
   dynamic "azure_files_authentication" {
@@ -68,6 +95,18 @@ resource "azurerm_storage_account" "storage" {
       }
     }
   }
+}
+
+# Creatue customer managed key
+resource "azurerm_storage_account_customer_managed_key" "this" {
+  count                        = var.customer_managed_key == null ? 0 : 1
+  storage_account_id           = azurerm_storage_account.storage.id
+  key_name                     = var.customer_managed_key.key_name
+  key_vault_id                 = var.customer_managed_key.key_vault_id
+  key_vault_uri                = var.customer_managed_key.key_vault_uri
+  key_version                  = var.customer_managed_key.key_version
+  user_assigned_identity_id    = var.customer_managed_key.user_assigned_identity_id
+  federated_identity_client_id = var.customer_managed_key.federated_identity_client_id
 }
 
 # Create storage share

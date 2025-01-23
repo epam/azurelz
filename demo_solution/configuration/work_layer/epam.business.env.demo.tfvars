@@ -1,144 +1,21 @@
-# BASE layer
-# 005_rg
-rg_list = [
-  # epam.business.env.demo
-  {
-    name     = "bus-rg-weeu-s-network-01"
-    location = "westeurope"
-    tags = {
-      Organization = "demo"
-    }
-  },
-  {
-    name     = "bus-rg-weeu-s-infra-01"
-    location = "westeurope"
-    tags = {
-      Organization = "demo"
-    }
-  },
-  {
-    name     = "bus-rg-weeu-s-compute-01"
-    location = "westeurope"
-    tags = {
-      Organization = "demo"
-    }
-  }
-]
+base_backend = {
+  backend_tfstate_file_path_list = [
+    "../base_layer/terraform.tfstate.d/epam.business.env.demo/terraform.tfstate",
+    "../base_layer/terraform.tfstate.d/epam.dmz.env.demo/terraform.tfstate",
+    "../base_layer/terraform.tfstate.d/epam.gateway.env.demo/terraform.tfstate",
+    "../base_layer/terraform.tfstate.d/epam.identity.env.demo/terraform.tfstate",
+    "../base_layer/terraform.tfstate.d/epam.shared.env.demo/terraform.tfstate"
+  ]
+}
 
-# 010_loganalytics
-logAnalytics = [
-  # epam.business.env.demo
+nsg_list = [
   {
-    name                            = "bus-la-weeu-p-central-01"
-    rg_name                         = "bus-rg-weeu-s-infra-01"
-    pricing_tier                    = "PerGB2018"
-    retention_in_days               = 60
-    storage_account_name            = "busstrpcentralla0001"
-    assignment_role_definition_name = "Monitoring Contributor"
-    assignment_description          = "Can read all monitoring data and update monitoring settings."
-    # Please configure subscriptions "IDs"
-    activity_log_subs                    = ["#{ENV_AZURE_SUBSCRIPTION_ID}#"]
-    monitoring_contributor_assigment_ids = {}
-
-    diagnostic_setting = {
-      name = "bus-la-weeu-p-central-01-dgs"
-      # uncomment if you want to use existing storage account to store logs
-      # storage_account_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/<storage_name>"
-      log_category_group = ["audit"]
-      metric             = ["AllMetrics"]
-    }
-    tags = {
-      environment         = ""
-      businessCriticality = ""
-      businessUnit        = ""
-      businessOwner       = ""
-      platfromSupport     = ""
-      functionalSupport   = ""
-      reviewedOn          = ""
-    }
-  }
-]
-
-# 025_vnet
-vnets = [
-  # epam.business.env.demo
-  {
-    vnet_name     = "bus-vnet-weeu-s-spoke-01"
-    rg_name       = "bus-rg-weeu-s-network-01"
-    address_space = ["10.1.16.0/20"]
-    subnets = [
-      {
-        name             = "sn-core-01"
-        address_prefixes = ["10.1.16.0/24"]
-        service_endpoints = [
-          "Microsoft.AzureActiveDirectory",
-          "Microsoft.KeyVault",
-          "Microsoft.Storage",
-          "Microsoft.Sql"
-        ]
-      },
-      {
-        name             = "PrivateEndpointSubnet"
-        address_prefixes = ["10.1.17.0/24"]
-        service_endpoints = [
-          "Microsoft.AzureActiveDirectory",
-          "Microsoft.KeyVault",
-          "Microsoft.Storage",
-          "Microsoft.Sql"
-        ]
-      },
-      {
-        name             = "sn-core-02"
-        address_prefixes = ["10.1.18.0/24"]
-        service_endpoints = [
-          "Microsoft.AzureActiveDirectory",
-          "Microsoft.KeyVault",
-          "Microsoft.Storage",
-          "Microsoft.Sql"
-        ]
-      }
-    ]
-    diagnostic_setting = {
-      name                       = "bus-vnet-weeu-s-spoke-01-diag"
-      log_analytics_workspace_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/bus-la-weeu-p-central-01"
-      storage_account_id         = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/busstrpcentralla0001"
-      log_category               = ["VMProtectionAlerts"]
-      metric                     = ["AllMetrics"]
-    }
-    tags = {
-      environment         = ""
-      businessCriticality = ""
-      businessUnit        = ""
-      businessOwner       = ""
-      platfromSupport     = ""
-      functionalSupport   = ""
-      reviewedOn          = ""
-    }
-  }
-]
-
-
-# WORK layer
-# backend tfstate data from base layer
-backend_tfstate_file_path_list = [
-  "../base_layer/terraform.tfstate.d/epam.shared.env.demo",
-  "../base_layer/terraform.tfstate.d/epam.identity.env.demo",
-  "../base_layer/terraform.tfstate.d/epam.dmz.env.demo",
-  "../base_layer/terraform.tfstate.d/epam.business.env.demo",
-  "../base_layer/terraform.tfstate.d/epam.gateway.env.demo"
-]
-
-# 030_nsg
-nsgs = [
-  {
-    name                = "demo-nsg-weeu-s-bs-vm"
+    nsg_name            = "demo-nsg-weeu-s-bs-vm"
     location            = "westeurope"
     resource_group_name = "bus-rg-weeu-s-network-01"
     subnet_associate = [
       {
-        subnet_name = "sn-core-01"
-        vnet_name   = "bus-vnet-weeu-s-spoke-01"
-        rg_name     = "bus-rg-weeu-s-network-01"
+        subnet_id = "/subscriptions/ef5a88d0-c379-4883-af44-af9a5570cfa2/resourceGroups/bus-rg-weeu-s-network-01/providers/Microsoft.Network/virtualNetworks/bus-vnet-weeu-s-spoke-01/subnets/sn-core-01"
       }
     ]
     inbound_rules = [
@@ -157,8 +34,8 @@ nsgs = [
     outbound_rules = []
     diagnostic_setting = {
       name                       = "demo-nsg-weeu-s-bs-vm-diag"
-      log_analytics_workspace_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/bus-la-weeu-p-central-01"
-      storage_account_id         = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/busstrpcentralla0001"
+      log_analytics_workspace_id = "/subscriptions/ef5a88d0-c379-4883-af44-af9a5570cfa2/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/bus-la-weeu-p-central-01"
+      storage_account_id         = "/subscriptions/ef5a88d0-c379-4883-af44-af9a5570cfa2/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/busstrpcentralla0001"
       log_category               = ["NetworkSecurityGroupEvent", "NetworkSecurityGroupRuleCounter"]
     }
     tags = {
@@ -173,7 +50,6 @@ nsgs = [
   }
 ]
 
-# 035_keyvault
 keyvaults = [
   {
     name                            = "bus-kv-weeu-s-sh-bus-01"
@@ -184,15 +60,7 @@ keyvaults = [
     enabled_for_disk_encryption     = true
     enabled_for_template_deployment = true
     purge_protection_enabled        = false
-    enable_rbac_authorization       = false
-    access_policies = [
-      {
-        object_ids              = ["#{ENV_AZURE_SP_OBJECT_ID}#"]
-        secret_permissions      = ["Get", "List", "Set", "Delete", "Recover", "Backup", "Restore", "Purge"]
-        certificate_permissions = ["Get", "Create", "List", "Import", "Purge", "Delete"]
-        key_permissions         = ["Get", "Create", "List", "Delete", "Purge"]
-      }
-    ]
+    enable_rbac_authorization       = true
     network_acls = {
       bypass         = "AzureServices"
       default_action = "Allow"
@@ -205,14 +73,23 @@ keyvaults = [
         }
       ]
     }
+    rbac = [
+      {
+        principal_id = "7bca97c4-40de-41e3-a290-a3586a277841"
+        assigment = {
+          role_definition_name = "Key Vault Administrator"
+          description          = "Assigment the KeyVault administrator role"
+          scope                = "/subscriptions/ef5a88d0-c379-4883-af44-af9a5570cfa2/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/bus-kv-weeu-s-sh-bus-01"
+        }
+      }
+    ]
     diagnostic_setting = {
       name                       = "bus-kv-weeu-s-sh-bus-01-giag"
-      log_analytics_workspace_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/bus-la-weeu-p-central-01"
-      storage_account_id         = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/busstrpcentralla0001"
+      log_analytics_workspace_id = "/subscriptions/ef5a88d0-c379-4883-af44-af9a5570cfa2/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/bus-la-weeu-p-central-01"
+      storage_account_id         = "/subscriptions/ef5a88d0-c379-4883-af44-af9a5570cfa2/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/busstrpcentralla0001"
       log_category               = ["AuditEvent", "AzurePolicyEvaluationDetails"]
       metric                     = ["AllMetrics"]
     }
-
     tags = {
       environment         = ""
       businessCriticality = ""
@@ -249,23 +126,21 @@ keyvaults = [
     }
     rbac = [
       {
-        principal_id = "#{ENV_AZURE_SP_OBJECT_ID}#"
+        principal_id = "7bca97c4-40de-41e3-a290-a3586a277841"
         assigment = {
           role_definition_name = "Key Vault Administrator"
           description          = "Assigment the KeyVault administrator role"
-          scope                = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/bus-kv-weeu-s-app-bus-01"
+          scope                = "/subscriptions/ef5a88d0-c379-4883-af44-af9a5570cfa2/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/bus-kv-weeu-s-app-bus-01"
         }
       }
     ]
-
     diagnostic_setting = {
       name                       = "bus-kv-weeu-s-app-bus-01-diag"
-      log_analytics_workspace_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/bus-la-weeu-p-central-01"
-      storage_account_id         = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/busstrpcentralla0001"
+      log_analytics_workspace_id = "/subscriptions/ef5a88d0-c379-4883-af44-af9a5570cfa2/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/bus-la-weeu-p-central-01"
+      storage_account_id         = "/subscriptions/ef5a88d0-c379-4883-af44-af9a5570cfa2/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/busstrpcentralla0001"
       log_category               = ["AuditEvent", "AzurePolicyEvaluationDetails"]
       metric                     = ["AllMetrics"]
     }
-
     tags = {
       environment         = ""
       businessCriticality = ""
@@ -278,11 +153,9 @@ keyvaults = [
   }
 ]
 
-# 035_keyvaultcontent
 keyvaultcontents = [
   {
-    keyvault_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/bus-kv-weeu-s-sh-bus-01"
-
+    keyvault_id = "/subscriptions/ef5a88d0-c379-4883-af44-af9a5570cfa2/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/bus-kv-weeu-s-sh-bus-01"
     secrets = [
       {
         name  = "epamuser"
@@ -292,7 +165,7 @@ keyvaultcontents = [
 
   },
   {
-    keyvault_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/bus-kv-weeu-s-app-bus-01"
+    keyvault_id = "/subscriptions/ef5a88d0-c379-4883-af44-af9a5570cfa2/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/bus-kv-weeu-s-app-bus-01"
     kv_name     = "bus-kv-weeu-s-app-bus-01"
 
     secrets = [
@@ -309,16 +182,15 @@ keyvaultcontents = [
           assigment = {
             role_definition_name = "Key Vault Secrets Officer"
             description          = "Perform any action on the secrets of a key vault, except manage permissions."
-            scope                = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/bus-kv-weeu-s-app-bus-01/secrets/secret"
+            scope                = "/subscriptions/ef5a88d0-c379-4883-af44-af9a5570cfa2/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/bus-kv-weeu-s-app-bus-01/secrets/secret"
           }
-          principal_id = "#{ENV_AZURE_SP_OBJECT_ID}#"
+          principal_id = "7bca97c4-40de-41e3-a290-a3586a277841"
         }
       }
     ]
   }
 ]
 
-# 035_storageaccount
 storage_accounts = [
   {
     storage_name                    = "busstorvmsbsbus011"
@@ -334,19 +206,6 @@ storage_accounts = [
     access_tier                     = "Hot"
     is_hns_enabled                  = false
     large_file_share_enabled        = false
-
-    private_endpoint = {
-      name                = "bus-pe-s-01"
-      resource_group_name = "bus-rg-weeu-s-infra-01"
-      location            = "westeurope"
-      subresource_names   = ["blob"]
-      subnet = {
-        name      = "PrivateEndpointSubnet"
-        vnet_name = "bus-vnet-weeu-s-spoke-01"
-        vnet_rg   = "bus-rg-weeu-s-network-01"
-      }
-    }
-
     network_rules = {
       bypass         = "AzureServices"
       default_action = "Deny"
@@ -360,14 +219,12 @@ storage_accounts = [
       ]
       external_subnet_ids = []
     }
-
     diagnostic_setting = {
       name                       = "busstorvmsbsbus011-diag"
-      storage_account_id         = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/busstrpcentralla0001"
-      log_analytics_workspace_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/bus-la-weeu-p-central-01"
+      storage_account_id         = "/subscriptions/ef5a88d0-c379-4883-af44-af9a5570cfa2/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/busstrpcentralla0001"
+      log_analytics_workspace_id = "/subscriptions/ef5a88d0-c379-4883-af44-af9a5570cfa2/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/bus-la-weeu-p-central-01"
       metric                     = ["Capacity", "Transaction"]
     }
-
     tags = {
       environment         = ""
       businessCriticality = ""
@@ -380,16 +237,26 @@ storage_accounts = [
   }
 ]
 
-# 035_vnetpeering
+privateendpoints = [
+  {
+    name                = "bus-pe-s-01"
+    resource_group_name = "bus-rg-weeu-s-infra-01"
+    location            = "westeurope"
+    subnet_id           = "/subscriptions/ef5a88d0-c379-4883-af44-af9a5570cfa2/resourceGroups/bus-rg-weeu-s-network-01/providers/Microsoft.Network/virtualNetworks/bus-vnet-weeu-s-spoke-01/subnets/PrivateEndpointSubnet"
+    private_service_connection = {
+      private_connection_resource_id = "/subscriptions/ef5a88d0-c379-4883-af44-af9a5570cfa2/resourceGroups/bus-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/busstorvmsbsbus011"
+      is_manual_connection           = false
+      subresource_names              = ["blob"]
+    }
+  }
+]
 
 vnet_peerings = [
-  # epam.business.env.demo
   {
     name                         = "bus-peer-weeu-s-gat-01"
-    source_vnet_name             = "bus-vnet-weeu-s-spoke-01"
-    source_vnet_rg_name          = "bus-rg-weeu-s-network-01"
-    destination_vnet_name        = "gat-vnet-weeu-s-hub-01"
-    destination_vnet_rg_name     = "gat-rg-weeu-s-network-01"
+    virtual_network_name         = "bus-vnet-weeu-s-spoke-01"
+    resource_group_name          = "bus-rg-weeu-s-network-01"
+    remote_virtual_network_name  = "gat-vnet-weeu-s-hub-01"
     allow_virtual_network_access = true
     allow_forwarded_traffic      = true
     allow_gateway_transit        = false
@@ -397,7 +264,6 @@ vnet_peerings = [
   }
 ]
 
-# 060_vm
 vms = [
   {
     vm_name                          = "vmnbus01"

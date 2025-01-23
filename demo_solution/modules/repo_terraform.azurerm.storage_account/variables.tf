@@ -32,7 +32,7 @@ variable "account_kind" {
 variable "account_replication_type" {
   description = "Defines the type of replication to use for this storage account."
   type        = string
-  default     = "LRS"
+  default     = "GRS"
 }
 
 variable "min_tls_version" {
@@ -50,19 +50,19 @@ variable "access_tier" {
 variable "allow_nested_items_to_be_public" {
   description = "Allow or disallow public access to all nested items in the storage account"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "public_network_access_enabled" {
   description = "Whether the public network access is enabled?"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "shared_access_key_enabled" {
   description = "Indicates whether the storage account permits requests to be authorized with the account access key via Shared Key"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "infrastructure_encryption_enabled" {
@@ -214,4 +214,71 @@ variable "azure_files_authentication" {
   EOF
   type        = any
   default     = {}
+}
+
+variable "customer_managed_key" {
+  description = <<EOF
+  Manage a Customer Managed Key for a Storage Account.
+  `storage_account_id` -  The ID of the Storage Account. Changing this forces a new resource to be created.
+  `key_name` - The name of Key Vault Key.
+  `key_vault_id` - The ID of the Key Vault. Exactly one of managed_hsm_key_id, key_vault_id, or key_vault_uri must be specified.
+  `key_vault_uri` -  URI pointing at the Key Vault. Required when using federated_identity_client_id.
+  `managed_hsm_key_id` - Key ID of a key in a managed HSM. 
+  `key_version` - The version of Key Vault Key. Remove or omit this argument to enable Automatic Key Rotation.
+  `user_assigned_identity_id` - The ID of a user assigned identity.
+  `federated_identity_client_id` - The Client ID of the multi-tenant application to be used in conjunction with the user-assigned identity for cross-tenant customer-managed-keys server-side encryption on the storage account.
+  EOF
+  type = object({
+    key_name                     = string
+    storage_account_id           = optional(string)
+    key_vault_id                 = optional(string)
+    key_vault_uri                = optional(string)
+    key_version                  = optional(string)
+    user_assigned_identity_id    = optional(string)
+    federated_identity_client_id = optional(string)
+  })
+  default = null
+}
+
+variable "sas_policy" {
+  description = <<EOF
+  `expiration_period` - The SAS expiration period in format of DD.HH:MM:SS.
+  `expiration_action` - The SAS expiration action. The only possible value is Log at this moment. Defaults to Log
+  EOF
+  type = object({
+    expiration_period = string
+    expiration_action = optional(string)
+  })
+  default = null
+}
+
+variable "logging" {
+  description = <<EOF
+  `delete` - Indicates whether all delete requests should be logged.
+  `read` - Indicates whether all read requests should be logged.
+  `version` - The version of storage analytics to configure.
+  `write` - Indicates whether all write requests should be logged.
+  `retention_policy_days` - Specifies the number of days that logs will be retained.
+  EOF
+  type = object({
+    delete                = bool
+    read                  = bool
+    version               = string
+    write                 = bool
+    retention_policy_days = optional(number)
+  })
+  default = null
+}
+
+variable "identity" {
+  description = <<EOF
+  An identity block supports the following:
+  `type` -  Specifies the type of Managed Service Identity that should be configured on this Storage Account.
+  `identity_ids` -  A list of User Assigned Managed Identity IDs to be assigned to this Storage Account.
+  EOF
+  type = object({
+    type         = string
+    identity_ids = list(string)
+  })
+  default = null
 }

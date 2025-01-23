@@ -81,6 +81,14 @@ resource "azurerm_network_interface" "vmnic" {
   }
 }
 
+# Create nic with azure load balancer backend pool association
+resource "azurerm_network_interface_backend_address_pool_association" "vmnic" {
+  for_each                = { for nic in var.nic_settings : "${nic.nic_vnet_name}-${nic.nic_subnet_name}" => nic if nic.lb_backend_address_pool_association != null }
+  network_interface_id    = try(each.value.lb_backend_address_pool_association, null) != null ? azurerm_network_interface.vmnic["${each.value.nic_vnet_name}-${each.value.nic_subnet_name}"].id : null
+  ip_configuration_name   = try(each.value.lb_backend_address_pool_association, null) != null ? azurerm_network_interface.vmnic["${each.value.nic_vnet_name}-${each.value.nic_subnet_name}"].ip_configuration[0].name : null
+  backend_address_pool_id = try(each.value.lb_backend_address_pool_association, null) != null ? "/subscriptions/${each.value.lb_backend_address_pool_association.lb_subscription_id}/resourceGroups/${each.value.lb_backend_address_pool_association.lb_rg_name}/providers/Microsoft.Network/loadBalancers/${each.value.lb_backend_address_pool_association.lb_name}/backendAddressPools/${each.value.lb_backend_address_pool_association.lb_backend_address_pool_name}" : null
+}
+
 # Get application security group data
 data "azurerm_application_security_group" "asg" {
   for_each            = { for nic in var.nic_settings : "${nic.nic_vnet_name}-${nic.nic_subnet_name}" => nic if nic.nsg_config != null && try(nic.nsg_config.nsg_association_type, null) == "asg" }
@@ -138,22 +146,24 @@ resource "azurerm_virtual_machine_data_disk_attachment" "datadisks" {
 
 # Windows VM NO DataDisk
 resource "azurerm_windows_virtual_machine" "vm_windows" {
-  count                      = var.vm_guest_os == "windows" ? 1 : 0
-  name                       = var.vm_name
-  location                   = var.vm_location == null ? data.azurerm_resource_group.vm_rg[0].location : var.vm_location
-  resource_group_name        = var.vm_rg_name
-  size                       = var.vm_size
-  network_interface_ids      = values(azurerm_network_interface.vmnic)[*].id
-  computer_name              = var.computer_name == null ? var.vm_name : var.computer_name
-  admin_username             = var.vm_admin_username
-  admin_password             = data.azurerm_key_vault_secret.admin_secret[0].value
-  license_type               = var.license_type_windows
-  provision_vm_agent         = var.provision_vm_agent
-  allow_extension_operations = var.provision_vm_agent
-  zone                       = var.zone_vm
-  custom_data                = var.custom_data_path == null ? null : filebase64(var.custom_data_path)
-  tags                       = var.tags == null ? {} : var.tags
-  source_image_id            = try(var.source_custom_image_id, null)
+  count                                                  = var.vm_guest_os == "windows" ? 1 : 0
+  name                                                   = var.vm_name
+  location                                               = var.vm_location == null ? data.azurerm_resource_group.vm_rg[0].location : var.vm_location
+  resource_group_name                                    = var.vm_rg_name
+  size                                                   = var.vm_size
+  network_interface_ids                                  = values(azurerm_network_interface.vmnic)[*].id
+  computer_name                                          = var.computer_name == null ? var.vm_name : var.computer_name
+  admin_username                                         = var.vm_admin_username
+  admin_password                                         = data.azurerm_key_vault_secret.admin_secret[0].value
+  license_type                                           = var.license_type_windows
+  allow_extension_operations                             = var.provision_vm_agent
+  zone                                                   = var.zone_vm
+  custom_data                                            = var.custom_data_path == null ? null : filebase64(var.custom_data_path)
+  tags                                                   = var.tags == null ? {} : var.tags
+  source_image_id                                        = try(var.source_custom_image_id, null)
+  patch_mode                                             = var.patch_mode
+  provision_vm_agent                                     = var.patch_mode == "AutomaticByPlatform" || var.patch_assessment_mode == "AutomaticByPlatform" ? true : var.provision_vm_agent
+  bypass_platform_safety_checks_on_user_schedule_enabled = var.patch_mode == "AutomaticByPlatform" ? true : var.bypass_platform_safety_checks_on_user_schedule_enabled
 
   dynamic "source_image_reference" {
     for_each = var.source_image_reference != null ? [var.source_image_reference] : []
@@ -195,22 +205,25 @@ resource "azurerm_windows_virtual_machine" "vm_windows" {
 
 # Linux VM NO DataDisk
 resource "azurerm_linux_virtual_machine" "vm_linux" {
-  count                           = var.vm_guest_os == "linux" ? 1 : 0
-  name                            = var.vm_name
-  location                        = var.vm_location == null ? data.azurerm_resource_group.vm_rg[0].location : var.vm_location
-  resource_group_name             = var.vm_rg_name
-  size                            = var.vm_size
-  network_interface_ids           = values(azurerm_network_interface.vmnic)[*].id
-  computer_name                   = var.computer_name == null ? var.vm_name : var.computer_name
-  admin_username                  = var.vm_admin_username
-  admin_password                  = var.vm_admin_ssh_public_key == null ? sensitive(data.azurerm_key_vault_secret.admin_secret[0].value) : null
-  provision_vm_agent              = var.provision_vm_agent
-  allow_extension_operations      = var.provision_vm_agent
-  disable_password_authentication = var.vm_admin_ssh_public_key == null ? false : true
-  zone                            = var.zone_vm
-  custom_data                     = var.custom_data_path == null ? null : filebase64(var.custom_data_path)
-  tags                            = var.tags == null ? {} : var.tags
-  source_image_id                 = var.source_custom_image_id
+  count                                                  = var.vm_guest_os == "linux" ? 1 : 0
+  name                                                   = var.vm_name
+  location                                               = var.vm_location == null ? data.azurerm_resource_group.vm_rg[0].location : var.vm_location
+  resource_group_name                                    = var.vm_rg_name
+  size                                                   = var.vm_size
+  network_interface_ids                                  = values(azurerm_network_interface.vmnic)[*].id
+  computer_name                                          = var.computer_name == null ? var.vm_name : var.computer_name
+  admin_username                                         = var.vm_admin_username
+  admin_password                                         = var.vm_admin_ssh_public_key == null ? sensitive(data.azurerm_key_vault_secret.admin_secret[0].value) : null
+  allow_extension_operations                             = var.provision_vm_agent
+  disable_password_authentication                        = var.vm_admin_ssh_public_key == null ? false : true
+  zone                                                   = var.zone_vm
+  custom_data                                            = var.custom_data_path == null ? null : filebase64(var.custom_data_path)
+  tags                                                   = var.tags == null ? {} : var.tags
+  source_image_id                                        = var.source_custom_image_id
+  patch_mode                                             = var.patch_mode
+  patch_assessment_mode                                  = var.patch_assessment_mode
+  provision_vm_agent                                     = var.patch_mode == "AutomaticByPlatform" || var.patch_assessment_mode == "AutomaticByPlatform" ? true : var.provision_vm_agent
+  bypass_platform_safety_checks_on_user_schedule_enabled = var.patch_mode == "AutomaticByPlatform" ? true : var.bypass_platform_safety_checks_on_user_schedule_enabled
 
   dynamic "source_image_reference" {
     for_each = var.source_image_reference != null ? [var.source_image_reference] : []
@@ -250,7 +263,7 @@ resource "azurerm_linux_virtual_machine" "vm_linux" {
   }
 
   dynamic "admin_ssh_key" {
-    for_each = var.vm_admin_ssh_public_key != null ? [1] : []
+    for_each = nonsensitive(var.vm_admin_ssh_public_key) != null ? [1] : []
     content {
       username   = var.vm_admin_username
       public_key = var.vm_admin_ssh_public_key

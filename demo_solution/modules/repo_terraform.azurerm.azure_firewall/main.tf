@@ -1,21 +1,10 @@
 # Get resource group data
 data "azurerm_resource_group" "rg" {
-  name = var.resource_group_name
+  count = var.location == null ? 1 : 0
+  name  = var.resource_group_name
 }
 
-# Get subnet to associate with Azure firewall
-data "azurerm_subnet" "subnet_associate" {
-  name                 = lookup(var.subnet_associate, "subnet_name", "AzureFirewallSubnet")
-  virtual_network_name = var.subnet_associate.vnet_name
-  resource_group_name  = lookup(var.subnet_associate, "rg_name", var.resource_group_name)
-}
-
-# Get public IP data
-data "azurerm_public_ip" "public_ip" {
-  name                = var.public_ip_address.name
-  resource_group_name = var.public_ip_address.rg_name
-}
-
+# Get firewall policy
 data "azurerm_firewall_policy" "policy" {
   count               = var.firewall_policy_name != null ? 1 : 0
   name                = var.firewall_policy_name
@@ -25,18 +14,20 @@ data "azurerm_firewall_policy" "policy" {
 # Create Azure firewall
 resource "azurerm_firewall" "firewall" {
   name                = var.name
-  location            = var.location == null ? data.azurerm_resource_group.rg.location : var.location
+  location            = var.location == null ? data.azurerm_resource_group.rg[0].location : var.location
   resource_group_name = var.resource_group_name
   sku_tier            = var.sku_tier
   sku_name            = var.sku_name
   zones               = var.zones == null ? null : var.zones
+  dns_servers         = var.dns_servers
+  dns_proxy_enabled   = var.dns_proxy_enabled
   firewall_policy_id  = var.firewall_policy_name != null ? data.azurerm_firewall_policy.policy[0].id : null
   tags                = var.tags
 
   ip_configuration {
     name                 = "ip_configuration"
-    subnet_id            = data.azurerm_subnet.subnet_associate.id
-    public_ip_address_id = data.azurerm_public_ip.public_ip.id
+    subnet_id            = var.subnet_id
+    public_ip_address_id = var.public_ip_address_id
   }
 
   dynamic "management_ip_configuration" {

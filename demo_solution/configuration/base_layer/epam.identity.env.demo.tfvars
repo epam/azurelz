@@ -1,5 +1,5 @@
-# BASE layer
-# 001_mg
+create_duration = "600s"
+
 mg_list_lvl_0 = [
   {
     name         = "companyroot"
@@ -20,9 +20,9 @@ mg_list_lvl_0 = [
     ]
   },
   {
-    name           = "canary-sandbox"
-    display_name   = "Canary/Sandbox"
-    parent_mg_name = "tenantrootgroup"
+    name         = "canary-sandbox"
+    display_name = "Canary/Sandbox"
+    parent_mg_id = "/providers/Microsoft.Management/managementGroups/27216267-679c-4697-a16e-6b9b9738932f"
     role_assignment_list = [
       # If the following role assignments are not inherited from "Tenant Root Group" Management Group uncomment the corresponding object.
       # Enterprise Application Object Id is used (not the App Registration Object Id).
@@ -43,7 +43,7 @@ mg_list_lvl_1 = [
   {
     name                 = "geo-region"
     display_name         = "Geo-Region"
-    parent_mg_name       = "companyroot"
+    parent_mg_id         = "/providers/Microsoft.Management/managementGroups/companyroot"
     role_assignment_list = []
   }
 ]
@@ -51,19 +51,19 @@ mg_list_lvl_2 = [
   {
     name                 = "decomissioned"
     display_name         = "Decomissioned"
-    parent_mg_name       = "geo-region"
+    parent_mg_id         = "/providers/Microsoft.Management/managementGroups/geo-region"
     role_assignment_list = []
   },
   {
     name                 = "platformlandingzone"
     display_name         = "PlatformLandingZone"
-    parent_mg_name       = "geo-region"
+    parent_mg_id         = "/providers/Microsoft.Management/managementGroups/geo-region"
     role_assignment_list = []
   },
   {
     name                 = "businesslandingzone"
     display_name         = "BusinessLandingZone"
-    parent_mg_name       = "geo-region"
+    parent_mg_id         = "/providers/Microsoft.Management/managementGroups/geo-region"
     role_assignment_list = []
   }
 ]
@@ -71,7 +71,7 @@ mg_list_lvl_3 = [
   {
     name                 = "identity"
     display_name         = "Identity"
-    parent_mg_name       = "platformlandingzone"
+    parent_mg_id         = "/providers/Microsoft.Management/managementGroups/platformlandingzone"
     role_assignment_list = []
 
     subscription_association_list = [
@@ -81,7 +81,7 @@ mg_list_lvl_3 = [
   {
     name                 = "networking"
     display_name         = "Networking"
-    parent_mg_name       = "platformlandingzone"
+    parent_mg_id         = "/providers/Microsoft.Management/managementGroups/platformlandingzone"
     role_assignment_list = []
 
     subscription_association_list = [
@@ -91,7 +91,7 @@ mg_list_lvl_3 = [
   {
     name                 = "sharedservices"
     display_name         = "SharedServices"
-    parent_mg_name       = "platformlandingzone"
+    parent_mg_id         = "/providers/Microsoft.Management/managementGroups/platformlandingzone"
     role_assignment_list = []
 
     subscription_association_list = [
@@ -101,7 +101,7 @@ mg_list_lvl_3 = [
   {
     name                 = "perimeter"
     display_name         = "Perimeter"
-    parent_mg_name       = "platformlandingzone"
+    parent_mg_id         = "/providers/Microsoft.Management/managementGroups/platformlandingzone"
     role_assignment_list = []
 
     subscription_association_list = [
@@ -111,7 +111,7 @@ mg_list_lvl_3 = [
   {
     name                 = "connected"
     display_name         = "Connected"
-    parent_mg_name       = "businesslandingzone"
+    parent_mg_id         = "/providers/Microsoft.Management/managementGroups/businesslandingzone"
     role_assignment_list = []
 
     subscription_association_list = [
@@ -121,36 +121,35 @@ mg_list_lvl_3 = [
   {
     name                 = "disconnected"
     display_name         = "Disconnected"
-    parent_mg_name       = "businesslandingzone"
+    parent_mg_id         = "/providers/Microsoft.Management/managementGroups/businesslandingzone"
     role_assignment_list = []
   },
   {
     name                 = "online"
     display_name         = "Online"
-    parent_mg_name       = "businesslandingzone"
+    parent_mg_id         = "/providers/Microsoft.Management/managementGroups/businesslandingzone"
     role_assignment_list = []
   },
   {
     name                 = "dev"
     display_name         = "Dev"
-    parent_mg_name       = "businesslandingzone"
+    parent_mg_id         = "/providers/Microsoft.Management/managementGroups/businesslandingzone"
     role_assignment_list = []
   },
   {
     name                 = "test"
     display_name         = "Test"
-    parent_mg_name       = "businesslandingzone"
+    parent_mg_id         = "/providers/Microsoft.Management/managementGroups/businesslandingzone"
     role_assignment_list = []
   },
   {
     name                 = "prod"
     display_name         = "Prod"
-    parent_mg_name       = "businesslandingzone"
+    parent_mg_id         = "/providers/Microsoft.Management/managementGroups/businesslandingzone"
     role_assignment_list = []
   }
 ]
 
-# 004_policyinitiative
 policy_initiatives = [
   {
     initiative_name       = "Organizational Operational Baseline"
@@ -356,23 +355,6 @@ policy_initiatives = [
         policy_type      = "Custom"
         value            = null
         parameter_values = <<PARAMETERS
-        PARAMETERS
-      },
-      {
-        policy_name        = "Auto provisioning of the Log Analytics agent should be enabled on your subscription"
-        policy_description = "To monitor for security vulnerabilities and threats, Azure Security Center collects data from your Azure virtual machines. Data is collected by the Log Analytics agent, formerly known as the Microsoft Monitoring Agent (MMA), which reads various security-related configurations and event logs from the machine and copies the data to your Log Analytics workspace for analysis. We recommend enabling auto provisioning to automatically deploy the agent to all supported Azure VMs and any new ones that are created."
-        policy_effect_allowed_values = [
-          "AuditIfNotExists",
-          "Disabled"
-        ]
-        policy_effect    = "AuditIfNotExists"
-        policy_id        = "475aae12-b88a-4572-8b36-9b712b2b3a17"
-        policy_version   = "1.0.1"
-        policy_category  = "Security Center"
-        policy_type      = "Custom"
-        value            = null
-        parameter_values = <<PARAMETERS
-        {"effect" : {"value" : "AuditIfNotExists" }} 
         PARAMETERS
       },
       {
@@ -596,23 +578,6 @@ policy_initiatives = [
         PARAMETERS
       },
       {
-        policy_name        = "Microsoft Defender for Storage (Classic) should be enabled"
-        policy_description = "Azure Defender for Storage provides detections of unusual and potentially harmful attempts to access or exploit storage accounts."
-        policy_effect_allowed_values = [
-          "AuditIfNotExists",
-          "Disabled"
-        ]
-        policy_effect    = "AuditIfNotExists"
-        policy_id        = "308fbb08-4ab8-4e67-9b29-592e93fb94fa"
-        policy_version   = "1.0.3"
-        policy_category  = "Security Center"
-        policy_type      = "Custom"
-        value            = null
-        parameter_values = <<PARAMETERS
-        {"effect" : {"value" : "AuditIfNotExists" }} 
-        PARAMETERS
-      },
-      {
         policy_name        = "Blocked accounts with owner permissions on Azure resources should be removed"
         policy_description = "Deprecated accounts with owner permissions should be removed from your subscription.  Deprecated accounts are accounts that have been blocked from signing in."
         policy_effect_allowed_values = [
@@ -647,23 +612,6 @@ policy_initiatives = [
         PARAMETERS
       },
       {
-        policy_name        = "Azure Defender for DNS should be enabled"
-        policy_description = "Azure Defender for DNS provides an additional layer of protection for your cloud resources by continuously monitoring all DNS queries from your Azure resources. Azure Defender alerts you about suspicious activity at the DNS layer. Learn more about the capabilities of Azure Defender for DNS at https://aka.ms/defender-for-dns . Enabling this Azure Defender plan results in charges. Learn about the pricing details per region on Security Center's pricing page: https://aka.ms/pricing-security-center ."
-        policy_effect_allowed_values = [
-          "AuditIfNotExists",
-          "Disabled"
-        ]
-        policy_effect    = "AuditIfNotExists"
-        policy_id        = "bdc59948-5574-49b3-bb91-76b7c986428d"
-        policy_version   = "1.0.0"
-        policy_category  = "Security Center"
-        policy_type      = "Custom"
-        value            = null
-        parameter_values = <<PARAMETERS
-        {"effect" : {"value" : "AuditIfNotExists" }} 
-        PARAMETERS
-      },
-      {
         policy_name        = "Non-internet-facing virtual machines should be protected with network security groups"
         policy_description = "Protect your non-internet-facing virtual machines from potential threats by restricting access with network security groups (NSG). Learn more about controlling traffic with NSGs at https://aka.ms/nsg-doc"
         policy_effect_allowed_values = [
@@ -690,23 +638,6 @@ policy_initiatives = [
         policy_effect    = "AuditIfNotExists"
         policy_id        = "bd352bd5-2853-4985-bf0d-73806b4a5744"
         policy_version   = "3.0.0"
-        policy_category  = "Security Center"
-        policy_type      = "Custom"
-        value            = null
-        parameter_values = <<PARAMETERS
-        {"effect" : {"value" : "AuditIfNotExists" }} 
-        PARAMETERS
-      },
-      {
-        policy_name        = "Endpoint protection should be installed on your machines"
-        policy_description = "To protect your machines from threats and vulnerabilities, install a supported endpoint protection solution."
-        policy_effect_allowed_values = [
-          "AuditIfNotExists",
-          "Disabled"
-        ]
-        policy_effect    = "AuditIfNotExists"
-        policy_id        = "1f7c564c-0a90-4d44-b7e1-9d456cffaee8"
-        policy_version   = "1.0.0"
         policy_category  = "Security Center"
         policy_type      = "Custom"
         value            = null
@@ -787,16 +718,33 @@ policy_initiatives = [
         PARAMETERS
       },
       {
-        policy_name        = "Virtual machines should encrypt temp disks, caches, and data flows between Compute and Storage resources"
-        policy_description = "By default, a virtual machine's OS and data disks are encrypted-at-rest using platform-managed keys. Temp disks, data caches and data flowing between compute and storage aren't encrypted. Disregard this recommendation if: 1. using encryption-at-host, or 2. server-side encryption on Managed Disks meets your security requirements. Learn more in: Server-side encryption of Azure Disk Storage: https://aka.ms/disksse, Different disk encryption offerings: https://aka.ms/diskencryptioncomparison"
+        policy_name        = "Windows virtual machines should enable Azure Disk Encryption or EncryptionAtHost."
+        policy_description = "Although a virtual machine's OS and data disks are encrypted-at-rest by default using platform managed keys; resource disks (temp disks), data caches, and data flowing between Compute and Storage resources are not encrypted. Use Azure Disk Encryption or EncryptionAtHost to remediate. Visit https://aka.ms/diskencryptioncomparison to compare encryption offerings. This policy requires two prerequisites to be deployed to the policy assignment scope. For details, visit https://aka.ms/gcpol."
         policy_effect_allowed_values = [
           "AuditIfNotExists",
           "Disabled"
         ]
         policy_effect    = "AuditIfNotExists"
-        policy_id        = "0961003e-5a0a-4549-abde-af6a37f2724d"
-        policy_version   = "2.0.3"
+        policy_id        = "3dc5edcd-002d-444c-b216-e123bbfa37c0"
+        policy_version   = "1.1.1"
         policy_category  = "Security Center"
+        policy_type      = "Custom"
+        value            = null
+        parameter_values = <<PARAMETERS
+        {"effect" : {"value" : "AuditIfNotExists" }} 
+        PARAMETERS
+      },
+      {
+        policy_name        = "Linux virtual machines should enable Azure Disk Encryption or EncryptionAtHost."
+        policy_description = "Although a virtual machine's OS and data disks are encrypted-at-rest by default using platform managed keys; resource disks (temp disks), data caches, and data flowing between Compute and Storage resources are not encrypted. Use Azure Disk Encryption or EncryptionAtHost to remediate. Visit https://aka.ms/diskencryptioncomparison to compare encryption offerings. This policy requires two prerequisites to be deployed to the policy assignment scope. For details, visit https://aka.ms/gcpol."
+        policy_effect_allowed_values = [
+          "AuditIfNotExists",
+          "Disabled"
+        ]
+        policy_effect    = "AuditIfNotExists"
+        policy_id        = "ca88aadc-6e2b-416c-9de2-5a0f01d1693f"
+        policy_version   = "1.2.1"
+        policy_category  = "Guest Configuration"
         policy_type      = "Custom"
         value            = null
         parameter_values = <<PARAMETERS
@@ -821,23 +769,6 @@ policy_initiatives = [
         PARAMETERS
       },
       {
-        policy_name        = "Accounts with read permissions on Azure resources should be MFA enabled"
-        policy_description = "Multi-Factor Authentication (MFA) should be enabled for all subscription accounts with read privileges to prevent a breach of accounts or resources."
-        policy_effect_allowed_values = [
-          "AuditIfNotExists",
-          "Disabled"
-        ]
-        policy_effect    = "AuditIfNotExists"
-        policy_id        = "e3576e28-8b17-4677-84c3-db2990658d64"
-        policy_version   = "3.0.0"
-        policy_category  = "Security Center"
-        policy_type      = "Custom"
-        value            = null
-        parameter_values = <<PARAMETERS
-        {"effect" : {"value" : "AuditIfNotExists" }} 
-        PARAMETERS
-      },
-      {
         policy_name        = "Email notification for high severity alerts should be enabled"
         policy_description = "To ensure the relevant people in your organization are notified when there is a potential security breach in one of your subscriptions, enable email notifications for high severity alerts in Security Center."
         policy_effect_allowed_values = [
@@ -847,23 +778,6 @@ policy_initiatives = [
         policy_effect    = "AuditIfNotExists"
         policy_id        = "6e2593d9-add6-4083-9c9b-4b7d2188c899"
         policy_version   = "1.0.1"
-        policy_category  = "Security Center"
-        policy_type      = "Custom"
-        value            = null
-        parameter_values = <<PARAMETERS
-        {"effect" : {"value" : "AuditIfNotExists" }} 
-        PARAMETERS
-      },
-      {
-        policy_name        = "Monitor missing Endpoint Protection in Azure Security Center"
-        policy_description = "Servers without an installed Endpoint Protection agent will be monitored by Azure Security Center as recommendations"
-        policy_effect_allowed_values = [
-          "AuditIfNotExists",
-          "Disabled"
-        ]
-        policy_effect    = "AuditIfNotExists"
-        policy_id        = "af6cd1bd-1635-48cb-bde7-5b15693900b9"
-        policy_version   = "3.0.0"
         policy_category  = "Security Center"
         policy_type      = "Custom"
         value            = null
@@ -1187,23 +1101,6 @@ policy_initiatives = [
         PARAMETERS
       },
       {
-        policy_name        = "Auto provisioning of the Log Analytics agent should be enabled on your subscription"
-        policy_description = "To monitor for security vulnerabilities and threats, Azure Security Center collects data from your Azure virtual machines. Data is collected by the Log Analytics agent, formerly known as the Microsoft Monitoring Agent (MMA), which reads various security-related configurations and event logs from the machine and copies the data to your Log Analytics workspace for analysis. We recommend enabling auto provisioning to automatically deploy the agent to all supported Azure VMs and any new ones that are created."
-        policy_effect_allowed_values = [
-          "AuditIfNotExists",
-          "Disabled"
-        ]
-        policy_effect    = "AuditIfNotExists"
-        policy_id        = "475aae12-b88a-4572-8b36-9b712b2b3a17"
-        policy_version   = "1.0.1"
-        policy_category  = "Security Center"
-        policy_type      = "Custom"
-        value            = null
-        parameter_values = <<PARAMETERS
-        {"effect" : {"value" : "AuditIfNotExists" }} 
-        PARAMETERS
-      },
-      {
         policy_name        = "All network ports should be restricted on network security groups associated to your virtual machine"
         policy_description = "Azure Security Center has identified some of your network security groups' inbound rules to be too permissive. Inbound rules should not allow access from 'Any' or 'Internet' ranges. This can potentially enable attackers to target your resources."
         policy_effect_allowed_values = [
@@ -1424,23 +1321,6 @@ policy_initiatives = [
         PARAMETERS
       },
       {
-        policy_name        = "Microsoft Defender for Storage (Classic) should be enabled"
-        policy_description = "Azure Defender for Storage provides detections of unusual and potentially harmful attempts to access or exploit storage accounts."
-        policy_effect_allowed_values = [
-          "AuditIfNotExists",
-          "Disabled"
-        ]
-        policy_effect    = "AuditIfNotExists"
-        policy_id        = "308fbb08-4ab8-4e67-9b29-592e93fb94fa"
-        policy_version   = "1.0.3"
-        policy_category  = "Security Center"
-        policy_type      = "Custom"
-        value            = null
-        parameter_values = <<PARAMETERS
-        {"effect" : {"value" : "AuditIfNotExists" }} 
-        PARAMETERS
-      },
-      {
         policy_name        = "Blocked accounts with owner permissions on Azure resources should be removed"
         policy_description = "Deprecated accounts with owner permissions should be removed from your subscription.  Deprecated accounts are accounts that have been blocked from signing in."
         policy_effect_allowed_values = [
@@ -1475,23 +1355,6 @@ policy_initiatives = [
         PARAMETERS
       },
       {
-        policy_name        = "Azure Defender for DNS should be enabled"
-        policy_description = "Azure Defender for DNS provides an additional layer of protection for your cloud resources by continuously monitoring all DNS queries from your Azure resources. Azure Defender alerts you about suspicious activity at the DNS layer. Learn more about the capabilities of Azure Defender for DNS at https://aka.ms/defender-for-dns . Enabling this Azure Defender plan results in charges. Learn about the pricing details per region on Security Center's pricing page: https://aka.ms/pricing-security-center ."
-        policy_effect_allowed_values = [
-          "AuditIfNotExists",
-          "Disabled"
-        ]
-        policy_effect    = "AuditIfNotExists"
-        policy_id        = "bdc59948-5574-49b3-bb91-76b7c986428d"
-        policy_version   = "1.0.0"
-        policy_category  = "Security Center"
-        policy_type      = "Custom"
-        value            = null
-        parameter_values = <<PARAMETERS
-        {"effect" : {"value" : "AuditIfNotExists" }} 
-        PARAMETERS
-      },
-      {
         policy_name        = "Non-internet-facing virtual machines should be protected with network security groups"
         policy_description = "Protect your non-internet-facing virtual machines from potential threats by restricting access with network security groups (NSG). Learn more about controlling traffic with NSGs at https://aka.ms/nsg-doc"
         policy_effect_allowed_values = [
@@ -1518,23 +1381,6 @@ policy_initiatives = [
         policy_effect    = "AuditIfNotExists"
         policy_id        = "bd352bd5-2853-4985-bf0d-73806b4a5744"
         policy_version   = "3.0.0"
-        policy_category  = "Security Center"
-        policy_type      = "Custom"
-        value            = null
-        parameter_values = <<PARAMETERS
-        {"effect" : {"value" : "AuditIfNotExists" }} 
-        PARAMETERS
-      },
-      {
-        policy_name        = "Endpoint protection should be installed on your machines"
-        policy_description = "To protect your machines from threats and vulnerabilities, install a supported endpoint protection solution."
-        policy_effect_allowed_values = [
-          "AuditIfNotExists",
-          "Disabled"
-        ]
-        policy_effect    = "AuditIfNotExists"
-        policy_id        = "1f7c564c-0a90-4d44-b7e1-9d456cffaee8"
-        policy_version   = "1.0.0"
         policy_category  = "Security Center"
         policy_type      = "Custom"
         value            = null
@@ -1615,16 +1461,33 @@ policy_initiatives = [
         PARAMETERS
       },
       {
-        policy_name        = "Virtual machines should encrypt temp disks, caches, and data flows between Compute and Storage resources"
-        policy_description = "By default, a virtual machine's OS and data disks are encrypted-at-rest using platform-managed keys. Temp disks, data caches and data flowing between compute and storage aren't encrypted. Disregard this recommendation if: 1. using encryption-at-host, or 2. server-side encryption on Managed Disks meets your security requirements. Learn more in: Server-side encryption of Azure Disk Storage: https://aka.ms/disksse, Different disk encryption offerings: https://aka.ms/diskencryptioncomparison"
+        policy_name        = "Windows virtual machines should enable Azure Disk Encryption or EncryptionAtHost."
+        policy_description = "Although a virtual machine's OS and data disks are encrypted-at-rest by default using platform managed keys; resource disks (temp disks), data caches, and data flowing between Compute and Storage resources are not encrypted. Use Azure Disk Encryption or EncryptionAtHost to remediate. Visit https://aka.ms/diskencryptioncomparison to compare encryption offerings. This policy requires two prerequisites to be deployed to the policy assignment scope. For details, visit https://aka.ms/gcpol."
         policy_effect_allowed_values = [
           "AuditIfNotExists",
           "Disabled"
         ]
         policy_effect    = "AuditIfNotExists"
-        policy_id        = "0961003e-5a0a-4549-abde-af6a37f2724d"
-        policy_version   = "2.0.3"
+        policy_id        = "3dc5edcd-002d-444c-b216-e123bbfa37c0"
+        policy_version   = "1.1.1"
         policy_category  = "Security Center"
+        policy_type      = "Custom"
+        value            = null
+        parameter_values = <<PARAMETERS
+        {"effect" : {"value" : "AuditIfNotExists" }} 
+        PARAMETERS
+      },
+      {
+        policy_name        = "Linux virtual machines should enable Azure Disk Encryption or EncryptionAtHost."
+        policy_description = "Although a virtual machine's OS and data disks are encrypted-at-rest by default using platform managed keys; resource disks (temp disks), data caches, and data flowing between Compute and Storage resources are not encrypted. Use Azure Disk Encryption or EncryptionAtHost to remediate. Visit https://aka.ms/diskencryptioncomparison to compare encryption offerings. This policy requires two prerequisites to be deployed to the policy assignment scope. For details, visit https://aka.ms/gcpol."
+        policy_effect_allowed_values = [
+          "AuditIfNotExists",
+          "Disabled"
+        ]
+        policy_effect    = "AuditIfNotExists"
+        policy_id        = "ca88aadc-6e2b-416c-9de2-5a0f01d1693f"
+        policy_version   = "1.2.1"
+        policy_category  = "Guest Configuration"
         policy_type      = "Custom"
         value            = null
         parameter_values = <<PARAMETERS
@@ -1649,23 +1512,6 @@ policy_initiatives = [
         PARAMETERS
       },
       {
-        policy_name        = "Accounts with read permissions on Azure resources should be MFA enabled"
-        policy_description = "Multi-Factor Authentication (MFA) should be enabled for all subscription accounts with read privileges to prevent a breach of accounts or resources."
-        policy_effect_allowed_values = [
-          "AuditIfNotExists",
-          "Disabled"
-        ]
-        policy_effect    = "AuditIfNotExists"
-        policy_id        = "e3576e28-8b17-4677-84c3-db2990658d64"
-        policy_version   = "3.0.0"
-        policy_category  = "Security Center"
-        policy_type      = "Custom"
-        value            = null
-        parameter_values = <<PARAMETERS
-        {"effect" : {"value" : "AuditIfNotExists" }} 
-        PARAMETERS
-      },
-      {
         policy_name        = "Email notification for high severity alerts should be enabled"
         policy_description = "To ensure the relevant people in your organization are notified when there is a potential security breach in one of your subscriptions, enable email notifications for high severity alerts in Security Center."
         policy_effect_allowed_values = [
@@ -1675,23 +1521,6 @@ policy_initiatives = [
         policy_effect    = "AuditIfNotExists"
         policy_id        = "6e2593d9-add6-4083-9c9b-4b7d2188c899"
         policy_version   = "1.0.1"
-        policy_category  = "Security Center"
-        policy_type      = "Custom"
-        value            = null
-        parameter_values = <<PARAMETERS
-        {"effect" : {"value" : "AuditIfNotExists" }} 
-        PARAMETERS
-      },
-      {
-        policy_name        = "Monitor missing Endpoint Protection in Azure Security Center"
-        policy_description = "Servers without an installed Endpoint Protection agent will be monitored by Azure Security Center as recommendations"
-        policy_effect_allowed_values = [
-          "AuditIfNotExists",
-          "Disabled"
-        ]
-        policy_effect    = "AuditIfNotExists"
-        policy_id        = "af6cd1bd-1635-48cb-bde7-5b15693900b9"
-        policy_version   = "3.0.0"
         policy_category  = "Security Center"
         policy_type      = "Custom"
         value            = null
@@ -2304,9 +2133,7 @@ policy_initiatives = [
   }
 ]
 
-# 005_rg
 rg_list = [
-  # epam.identity.env.demo
   {
     name     = "idth-rg-weeu-s-network-01"
     location = "westeurope"
@@ -2323,24 +2150,34 @@ rg_list = [
   }
 ]
 
-# 010_loganalytics
-logAnalytics = [
-  # epam.identity.env.demo
+storage_accounts = [
   {
-    name                                 = "idth-la-weeu-p-centralShared-01"
-    rg_name                              = "idth-rg-weeu-s-infra-01"
-    pricing_tier                         = "PerGB2018"
-    retention_in_days                    = 60
-    storage_account_name                 = "idtstrpcsharedla0001"
-    assignment_role_definition_name      = "Monitoring Contributor"
-    assignment_description               = "Can read all monitoring data and update monitoring settings."
-    monitoring_contributor_assigment_ids = {}
-    # Please configure subscriptions "IDs"
-    activity_log_subs = ["#{ENV_AZURE_SUBSCRIPTION_ID}#"]
+    storage_name = "idtstrpcsharedla0001"
+    rg_name      = "idth-rg-weeu-s-infra-01"
+    location     = "westeurope"
+    tags = {
+      environment         = ""
+      businessCriticality = ""
+      businessUnit        = ""
+      businessOwner       = ""
+      platfromSupport     = ""
+      functionalSupport   = ""
+      reviewedOn          = ""
+    }
+  }
+]
+
+logAnalytics = [
+  {
+    name              = "idth-la-weeu-p-centralShared-01"
+    rg_name           = "idth-rg-weeu-s-infra-01"
+    location          = "westeurope"
+    pricing_tier      = "PerGB2018"
+    retention_in_days = 60
+    activity_log_subs = ["cd1163b2-21b2-4ac6-b33f-53058af48b26"]
     diagnostic_setting = {
-      name = "idth-la-weeu-p-centralShared-01-dgs"
-      # uncomment if you want to use existing storage account to store logs
-      # storage_account_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/idth-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/<storage_name>"
+      name               = "idth-la-weeu-p-centralShared-01-dgs"
+      storage_account_id = "/subscriptions/cd1163b2-21b2-4ac6-b33f-53058af48b26/resourceGroups/idth-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/idtstrpcsharedla0001"
       log_category_group = ["audit"]
       metric             = ["AllMetrics"]
     }
@@ -2356,12 +2193,11 @@ logAnalytics = [
   }
 ]
 
-# 025_vnet
 vnets = [
-  # epam.identity.env.demo
   {
     vnet_name     = "idth-vnet-weeu-s-spoke-01"
     rg_name       = "idth-rg-weeu-s-network-01"
+    location      = "westeurope"
     address_space = ["10.1.0.0/20"]
     subnets = [
       {
@@ -2383,8 +2219,8 @@ vnets = [
     ]
     diagnostic_setting = {
       name                       = "idth-vnet-weeu-s-spoke-01-diag"
-      log_analytics_workspace_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/idth-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/idth-la-weeu-p-centralShared-01"
-      storage_account_id         = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/idth-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/idtstrpcsharedla0001"
+      log_analytics_workspace_id = "/subscriptions/cd1163b2-21b2-4ac6-b33f-53058af48b26/resourceGroups/idth-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/idth-la-weeu-p-centralShared-01"
+      storage_account_id         = "/subscriptions/cd1163b2-21b2-4ac6-b33f-53058af48b26/resourceGroups/idth-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/idtstrpcsharedla0001"
       log_category               = ["VMProtectionAlerts"]
       metric                     = ["AllMetrics"]
     }
@@ -2397,31 +2233,5 @@ vnets = [
       functionalSupport   = ""
       reviewedOn          = ""
     }
-  }
-]
-
-# WORK layer
-# backend tfstate data from base layer
-backend_tfstate_file_path_list = [
-  "../base_layer/terraform.tfstate.d/epam.shared.env.demo",
-  "../base_layer/terraform.tfstate.d/epam.identity.env.demo",
-  "../base_layer/terraform.tfstate.d/epam.dmz.env.demo",
-  "../base_layer/terraform.tfstate.d/epam.business.env.demo",
-  "../base_layer/terraform.tfstate.d/epam.gateway.env.demo"
-]
-
-# 035_vnetpeering
-vnet_peerings = [
-  # epam.identity.env.demo
-  {
-    name                         = "idth-peer-weeu-s-gat-01"
-    source_vnet_name             = "idth-vnet-weeu-s-spoke-01"
-    source_vnet_rg_name          = "idth-rg-weeu-s-network-01"
-    destination_vnet_name        = "gat-vnet-weeu-s-hub-01"
-    destination_vnet_rg_name     = "gat-rg-weeu-s-network-01"
-    allow_virtual_network_access = true
-    allow_forwarded_traffic      = true
-    allow_gateway_transit        = false
-    use_remote_gateways          = false
   }
 ]

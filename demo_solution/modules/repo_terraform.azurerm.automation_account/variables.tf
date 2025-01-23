@@ -124,7 +124,7 @@ variable "module" {
   EOF
   type = list(object({
     module_name = string
-    module_link = map(string)
+    module_link = string
   }))
   default = []
 }

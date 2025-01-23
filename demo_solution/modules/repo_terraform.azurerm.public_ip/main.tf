@@ -16,6 +16,8 @@ resource "azurerm_public_ip" "public_ip" {
   idle_timeout_in_minutes = var.idle_timeout_in_minutes
   reverse_fqdn            = var.reverse_fqdn
   zones                   = var.zones
+  ddos_protection_mode    = var.ddos_protection_mode
+  ddos_protection_plan_id = var.ddos_protection_plan_id
   tags                    = var.tags
 }
 

@@ -1,141 +1,17 @@
-# BASE layer
-# 005_rg
-rg_list = [
-  # epam.dmz.env.demo
-  {
-    name     = "dmz-rg-weeu-s-network-01"
-    location = "westeurope"
-    tags = {
-      Organization = "demo"
-    }
-  },
-  {
-    name     = "dmz-rg-weeu-s-infra-01"
-    location = "westeurope"
-    tags = {
-      Organization = "demo"
-    }
-  },
-  {
-    name     = "dmz-rg-weeu-s-compute-01"
-    location = "westeurope"
-    tags = {
-      Organization = "demo"
-    }
-  }
-]
+tfstate_backend = {
+  backend_tfstate_file_path = "../base_layer/terraform.tfstate.d/epam.dmz.env.demo/terraform.tfstate",
+}
 
-# 006_useridentity
-user_identities = [
-  {
-    name     = "dmz-demo-identity-01"
-    location = "westeurope"
-    rg_name  = "dmz-rg-weeu-s-network-01"
-    tags = {
-      environment         = ""
-      businessCriticality = ""
-      businessUnit        = ""
-      businessOwner       = ""
-      platfromSupport     = ""
-      functionalSupport   = ""
-      reviewedOn          = ""
-    }
-  }
-]
+base_backend = {
+  backend_tfstate_file_path_list = [
+    "../base_layer/terraform.tfstate.d/epam.business.env.demo/terraform.tfstate",
+    "../base_layer/terraform.tfstate.d/epam.dmz.env.demo/terraform.tfstate",
+    "../base_layer/terraform.tfstate.d/epam.gateway.env.demo/terraform.tfstate",
+    "../base_layer/terraform.tfstate.d/epam.identity.env.demo/terraform.tfstate",
+    "../base_layer/terraform.tfstate.d/epam.shared.env.demo/terraform.tfstate"
+  ]
+}
 
-# 010_loganalytics
-logAnalytics = [
-  # epam.dmz.env.demo
-  {
-    name                                 = "dmz-la-weeu-p-centralnetworking-01"
-    rg_name                              = "dmz-rg-weeu-s-infra-01"
-    pricing_tier                         = "PerGB2018"
-    retention_in_days                    = 60
-    storage_account_name                 = "dmzstrpcnetworkingla0001"
-    assignment_role_definition_name      = "Monitoring Contributor"
-    assignment_description               = "Can read all monitoring data and update monitoring settings."
-    monitoring_contributor_assigment_ids = {}
-    # Please configure subscriptions "IDs"
-    activity_log_subs = ["#{ENV_AZURE_SUBSCRIPTION_ID}#"]
-    diagnostic_setting = {
-      name = "dmz-la-weeu-p-centralnetworking-01-dgs"
-      # storage_account_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/<storage_name>"
-      log_category_group = ["audit"]
-      metric             = ["AllMetrics"]
-    }
-    tags = {
-      environment         = ""
-      businessCriticality = ""
-      businessUnit        = ""
-      businessOwner       = ""
-      platfromSupport     = ""
-      functionalSupport   = ""
-      reviewedOn          = ""
-    }
-  }
-]
-
-# 025_vnet
-vnets = [
-  # epam.dmz.env.demo
-  {
-    vnet_name     = "dmz-vnet-weeu-s-spoke-01"
-    rg_name       = "dmz-rg-weeu-s-network-01"
-    address_space = ["10.1.80.0/20"]
-    subnets = [
-      {
-        name             = "ApplicationGatewaySubnet"
-        address_prefixes = ["10.1.80.0/24"]
-        service_endpoints = [
-          "Microsoft.AzureActiveDirectory",
-          "Microsoft.KeyVault",
-          "Microsoft.Storage",
-          "Microsoft.Sql"
-        ]
-      },
-      {
-        name             = "sn-core-01"
-        address_prefixes = ["10.1.81.0/24"]
-        service_endpoints = [
-          "Microsoft.AzureActiveDirectory",
-          "Microsoft.KeyVault",
-          "Microsoft.Storage",
-          "Microsoft.Sql",
-          "Microsoft.AzureCosmosDB"
-        ]
-      }
-    ]
-    diagnostic_setting = {
-      name                       = "dmz-vnet-weeu-s-spoke-01-diag"
-      log_analytics_workspace_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/dmz-la-weeu-p-centralnetworking-01"
-      storage_account_id         = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/dmzstrpcnetworkingla0001"
-      log_category               = ["VMProtectionAlerts"]
-      metric                     = ["AllMetrics"]
-    }
-    tags = {
-      environment         = ""
-      businessCriticality = ""
-      businessUnit        = ""
-      businessOwner       = ""
-      platfromSupport     = ""
-      functionalSupport   = ""
-      reviewedOn          = ""
-    }
-  }
-]
-
-
-# WORK layer
-backend_tfstate_file_path = "../base_layer/terraform.tfstate.d/epam.dmz.env.demo"
-backend_tfstate_file_path_list = [
-  "../base_layer/terraform.tfstate.d/epam.shared.env.demo",
-  "../base_layer/terraform.tfstate.d/epam.identity.env.demo",
-  "../base_layer/terraform.tfstate.d/epam.dmz.env.demo",
-  "../base_layer/terraform.tfstate.d/epam.business.env.demo",
-  "../base_layer/terraform.tfstate.d/epam.gateway.env.demo"
-]
-
-# 025_publicip
 public_ips = [
   {
     name              = "dmz-pip-weeu-s-dmzapgt-01"
@@ -148,8 +24,8 @@ public_ips = [
 
     diagnostic_setting = {
       name                       = "dmz-pip-weeu-s-dmzapgt-diag"
-      log_analytics_workspace_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/dmz-la-weeu-p-centralnetworking-01"
-      storage_account_id         = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/dmzstrpcnetworkingla0001"
+      log_analytics_workspace_id = "/subscriptions/a3339543-0d5d-4528-8efa-d51c0ecf0b55/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/dmz-la-weeu-p-centralnetworking-01"
+      storage_account_id         = "/subscriptions/a3339543-0d5d-4528-8efa-d51c0ecf0b55/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/dmzstrpcnetworkingla0001"
       log_category               = ["DDoSProtectionNotifications", "DDoSMitigationFlowLogs", "DDoSMitigationReports"]
       metric                     = ["AllMetrics"]
     }
@@ -166,25 +42,22 @@ public_ips = [
   }
 ]
 
-# 030_nsg
-nsgs = [
+nsg_list = [
   {
-    name                = "dmz-nsg-weeu-s-net-appgtw"
+    nsg_name            = "dmz-nsg-weeu-s-net-appgtw"
     location            = "westeurope"
     resource_group_name = "dmz-rg-weeu-s-network-01"
 
     diagnostic_setting = {
       name                       = "dmz-nsg-weeu-s-net-appgtw-diag"
-      log_analytics_workspace_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/dmz-la-weeu-p-centralnetworking-01"
-      storage_account_id         = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/dmzstrpcnetworkingla0001"
+      log_analytics_workspace_id = "/subscriptions/a3339543-0d5d-4528-8efa-d51c0ecf0b55/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/dmz-la-weeu-p-centralnetworking-01"
+      storage_account_id         = "/subscriptions/a3339543-0d5d-4528-8efa-d51c0ecf0b55/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/dmzstrpcnetworkingla0001"
       log_category               = ["NetworkSecurityGroupEvent", "NetworkSecurityGroupRuleCounter"]
     }
 
     subnet_associate = [
       {
-        subnet_name = "ApplicationGatewaySubnet"
-        vnet_name   = "dmz-vnet-weeu-s-spoke-01"
-        rg_name     = "dmz-rg-weeu-s-network-01"
+        subnet_id = "/subscriptions/a3339543-0d5d-4528-8efa-d51c0ecf0b55/resourceGroups/dmz-rg-weeu-s-network-01/providers/Microsoft.Network/virtualNetworks/dmz-vnet-weeu-s-spoke-01/subnets/ApplicationGatewaySubnet"
       }
     ]
 
@@ -237,15 +110,13 @@ nsgs = [
     }
   },
   {
-    name                = "dmz-nsg-weeu-s-net-vm"
+    nsg_name            = "dmz-nsg-weeu-s-net-vm"
     location            = "westeurope"
     resource_group_name = "dmz-rg-weeu-s-network-01"
 
     subnet_associate = [
       {
-        subnet_name = "sn-core-01"
-        vnet_name   = "dmz-vnet-weeu-s-spoke-01"
-        rg_name     = "dmz-rg-weeu-s-network-01"
+        subnet_id = "/subscriptions/a3339543-0d5d-4528-8efa-d51c0ecf0b55/resourceGroups/dmz-rg-weeu-s-network-01/providers/Microsoft.Network/virtualNetworks/dmz-vnet-weeu-s-spoke-01/subnets/sn-core-01"
       }
     ]
     inbound_rules = [
@@ -361,7 +232,6 @@ nsgs = [
   }
 ]
 
-# 035_keyvault
 keyvaults = [
   {
     name                            = "dmz-kv-weeu-s-sh-dmz-01"
@@ -373,26 +243,11 @@ keyvaults = [
     enabled_for_disk_encryption     = true
     enabled_for_template_deployment = true
     purge_protection_enabled        = false
-    enable_rbac_authorization       = false
-
-    access_policies = [
-      {
-        object_ids              = ["#{ENV_AZURE_SP_OBJECT_ID}#"]
-        secret_permissions      = ["Get", "List", "Set", "Delete", "Recover", "Backup", "Restore", "Purge"]
-        certificate_permissions = ["Get", "Create", "List", "Import", "Purge", "Delete"]
-        key_permissions         = ["Get", "Create", "List", "Delete", "Purge"]
-      },
-      {
-        identity_names          = ["dmz-demo-identity-01"]
-        certificate_permissions = ["Get", "Create", "List", "Import", "Purge", "Delete", "Recover", "Update"]
-        secret_permissions      = ["Get", "List", "Set", "Delete", "Recover", "Backup", "Restore", "Purge"]
-      }
-    ]
+    enable_rbac_authorization       = true
     network_acls = {
       bypass         = "AzureServices"
       default_action = "Allow"
       ip_rules       = []
-
       subnet_associations = [
         {
           subnet_name = "sn-core-01"
@@ -401,15 +256,31 @@ keyvaults = [
         }
       ]
     }
-
+    rbac = [
+      {
+        principal_id = "7bca97c4-40de-41e3-a290-a3586a277841"
+        assigment = {
+          role_definition_name = "Key Vault Administrator"
+          description          = "Assigment the KeyVault administrator role"
+          scope                = "/subscriptions/a3339543-0d5d-4528-8efa-d51c0ecf0b55/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/dmz-kv-weeu-s-sh-dmz-01"
+        }
+      },
+      {
+        identity_name = "dmz-demo-identity-01"
+        assigment = {
+          role_definition_name = "Key Vault Administrator"
+          description          = "Assigment the KeyVault administrator role"
+          scope                = "/subscriptions/a3339543-0d5d-4528-8efa-d51c0ecf0b55/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/dmz-kv-weeu-s-sh-dmz-01"
+        }
+      }
+    ]
     diagnostic_setting = {
       name                       = "dmz-kv-weeu-s-sh-dmz-01-diag"
-      log_analytics_workspace_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/dmz-la-weeu-p-centralnetworking-01"
-      storage_account_id         = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/dmzstrpcnetworkingla0001"
+      log_analytics_workspace_id = "/subscriptions/a3339543-0d5d-4528-8efa-d51c0ecf0b55/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/dmz-la-weeu-p-centralnetworking-01"
+      storage_account_id         = "/subscriptions/a3339543-0d5d-4528-8efa-d51c0ecf0b55/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/dmzstrpcnetworkingla0001"
       log_category               = ["AuditEvent", "AzurePolicyEvaluationDetails"]
       metric                     = ["AllMetrics"]
     }
-
     tags = {
       environment         = ""
       businessCriticality = ""
@@ -431,7 +302,6 @@ keyvaults = [
     enabled_for_template_deployment = true
     purge_protection_enabled        = false
     enable_rbac_authorization       = true
-
     network_acls = {
       bypass         = "AzureServices"
       default_action = "Allow"
@@ -447,23 +317,21 @@ keyvaults = [
     }
     rbac = [
       {
-        principal_id = "#{ENV_AZURE_SP_OBJECT_ID}#"
+        principal_id = "7bca97c4-40de-41e3-a290-a3586a277841"
         assigment = {
           role_definition_name = "Key Vault Administrator"
           description          = "Assigment the KeyVault administrator role"
-          scope                = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/dmz-kv-weeu-s-app-dmz-01"
+          scope                = "/subscriptions/a3339543-0d5d-4528-8efa-d51c0ecf0b55/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/dmz-kv-weeu-s-app-dmz-01"
         }
       }
     ]
-
     diagnostic_setting = {
       name                       = "dmz-kv-weeu-s-app-dmz-01-diag"
-      log_analytics_workspace_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/dmz-la-weeu-p-centralnetworking-01"
-      storage_account_id         = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/dmzstrpcnetworkingla0001"
+      log_analytics_workspace_id = "/subscriptions/a3339543-0d5d-4528-8efa-d51c0ecf0b55/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/dmz-la-weeu-p-centralnetworking-01"
+      storage_account_id         = "/subscriptions/a3339543-0d5d-4528-8efa-d51c0ecf0b55/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/dmzstrpcnetworkingla0001"
       log_category               = ["AuditEvent", "AzurePolicyEvaluationDetails"]
       metric                     = ["AllMetrics"]
     }
-
     tags = {
       environment         = ""
       businessCriticality = ""
@@ -476,11 +344,9 @@ keyvaults = [
   }
 ]
 
-# 035_keyvaultcontent
 keyvaultcontents = [
   {
-    keyvault_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/dmz-kv-weeu-s-sh-dmz-01"
-
+    keyvault_id = "/subscriptions/a3339543-0d5d-4528-8efa-d51c0ecf0b55/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/dmz-kv-weeu-s-sh-dmz-01"
     secrets = [
       {
         name  = "epamuser"
@@ -535,7 +401,7 @@ keyvaultcontents = [
     ]
   },
   {
-    keyvault_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/dmz-kv-weeu-s-app-dmz-01"
+    keyvault_id = "/subscriptions/a3339543-0d5d-4528-8efa-d51c0ecf0b55/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/dmz-kv-weeu-s-app-dmz-01"
     kv_name     = "dmz-kv-weeu-s-app-dmz-01"
 
     secrets = [
@@ -544,7 +410,6 @@ keyvaultcontents = [
         value = "My$ecureP@ss"
       }
     ]
-
     rbac = [
       {
         name = "KeyVaultSecretsOfficer"
@@ -552,24 +417,21 @@ keyvaultcontents = [
           assigment = {
             role_definition_name = "Key Vault Secrets Officer"
             description          = "Perform any action on the secrets of a key vault, except manage permissions."
-            scope                = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/dmz-kv-weeu-s-app-dmz-01/secrets/secret"
+            scope                = "/subscriptions/a3339543-0d5d-4528-8efa-d51c0ecf0b55/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.KeyVault/vaults/dmz-kv-weeu-s-app-dmz-01/secrets/secret"
           }
-          principal_id = "#{ENV_AZURE_SP_OBJECT_ID}#"
+          principal_id = "7bca97c4-40de-41e3-a290-a3586a277841"
         }
       }
     ]
   }
 ]
 
-# 035_vnetpeering
 vnet_peerings = [
-  # epam.dmz.env.demo
   {
     name                         = "dmz-peer-weeu-s-dmz-gat-01"
-    source_vnet_name             = "dmz-vnet-weeu-s-spoke-01"
-    source_vnet_rg_name          = "dmz-rg-weeu-s-network-01"
-    destination_vnet_name        = "gat-vnet-weeu-s-hub-01"
-    destination_vnet_rg_name     = "gat-rg-weeu-s-network-01"
+    virtual_network_name         = "dmz-vnet-weeu-s-spoke-01"
+    resource_group_name          = "dmz-rg-weeu-s-network-01"
+    remote_virtual_network_name  = "gat-vnet-weeu-s-hub-01"
     allow_virtual_network_access = true
     allow_forwarded_traffic      = true
     allow_gateway_transit        = false
@@ -577,7 +439,6 @@ vnet_peerings = [
   }
 ]
 
-# 055_appgtw
 app_gateways = [
   {
     name         = "dmz-apgt-weeu-s-01"
@@ -589,9 +450,7 @@ app_gateways = [
       tier     = "WAF_v2"
       capacity = null
     }
-
-    identity_ids = ["/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/dmz-rg-weeu-s-network-01/providers/Microsoft.ManagedIdentity/userAssignedIdentities/dmz-demo-identity-01"]
-
+    identity_ids = ["/subscriptions/a3339543-0d5d-4528-8efa-d51c0ecf0b55/resourceGroups/dmz-rg-weeu-s-network-01/providers/Microsoft.ManagedIdentity/userAssignedIdentities/dmz-demo-identity-01"]
     gateway_ip_configurations = [
       {
         name         = "gateway_ip_configuration_01"
@@ -649,7 +508,6 @@ app_gateways = [
           authentication_certificate          = []
           trusted_root_certificate_names      = []
           connection_draining                 = null
-
         }
         http_listener = {
           frontend_ip_configuration_name = "public"
@@ -687,15 +545,13 @@ app_gateways = [
       rule_set_type    = "OWASP"
       rule_set_version = "3.2"
     }
-
     diagnostic_setting = {
       name                       = "dmz-apgt-weeu-s-01-diag"
-      log_analytics_workspace_id = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/dmz-la-weeu-p-centralnetworking-01"
-      storage_account_id         = "/subscriptions/#{ENV_AZURE_SUBSCRIPTION_ID}#/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/dmzstrpcnetworkingla0001"
+      log_analytics_workspace_id = "/subscriptions/a3339543-0d5d-4528-8efa-d51c0ecf0b55/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.OperationalInsights/workspaces/dmz-la-weeu-p-centralnetworking-01"
+      storage_account_id         = "/subscriptions/a3339543-0d5d-4528-8efa-d51c0ecf0b55/resourceGroups/dmz-rg-weeu-s-infra-01/providers/Microsoft.Storage/storageAccounts/dmzstrpcnetworkingla0001"
       log_category               = ["ApplicationGatewayAccessLog", "ApplicationGatewayFirewallLog", "ApplicationGatewayPerformanceLog"]
       metric                     = ["AllMetrics"]
     }
-
     tags = {
       environment         = ""
       businessCriticality = ""
@@ -708,7 +564,6 @@ app_gateways = [
   }
 ]
 
-# 060_vm
 vms = [
   {
     vm_name                          = "vmdmz01"
